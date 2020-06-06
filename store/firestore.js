@@ -1,5 +1,5 @@
-const admin = require('firebase-admin')
-const { config } = require('../config')
+const admin = require('firebase-admin');
+const { config } = require('../config');
 
 //const serviceAccount = require(config);
 
@@ -12,4 +12,4 @@ const db = admin.firestore();
 
 module.exports = {
     //instances
-}
+};
