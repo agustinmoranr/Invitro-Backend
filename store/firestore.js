@@ -1,15 +1,17 @@
 const admin = require('firebase-admin');
-const { config } = require('../config');
 
-//const serviceAccount = require(config);
-
+const serviceAccount = require("../config/firebaseConfig");
 admin.initializeApp({
-  credential: admin.credential.cert(config),
-  databaseURL: "https://in-vitro-470ae.firebaseio.com",
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `"https://${serviceAccount.project_id}.firebaseio.com"`,
 });
 
+//controllers
+const User = require('../components/user/controller');
+
+//db
 const db = admin.firestore();
 
 module.exports = {
-    //instances
+  users: new User(db),
 };
