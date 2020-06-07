@@ -1,14 +1,15 @@
 class Massive {
-  constructor(db) {
+  constructor(db, admin) {
     this.db = db;
     this.collection = this.db.collection("user");
+    this.admin = admin;
   }
 
   async insertUsers(jsonUsers) {
     let messages = [];
     const users = jsonUsers;
     for (let i = 0; i < jsonUsers.length; i++) {
-      const message = await admin
+      let message = await this.admin
         .auth()
         .createUser({
           email: jsonUsers[i]["email"],
@@ -17,7 +18,7 @@ class Massive {
           disabled: false,
           displayName: `${jsonUsers[i]["name"]} ${jsonUsers[i]["lastName"]}`,
         })
-        .then(function (userRecord) {
+        .then(function(userRecord) {
           // See the UserRecord reference doc for the contents of userRecord.
           console.log(
             "Successfully created new user:",
@@ -46,7 +47,7 @@ class Massive {
             Result: "Succesfully created",
           };
         })
-        .catch(function (error) {
+        .catch( (error) => {
           // console.log("Error creating new user:", error);
           return { "User email": jsonUsers[i]["email"], Result: error.code };
         });
