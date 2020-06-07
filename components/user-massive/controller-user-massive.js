@@ -24,9 +24,9 @@ class Massive {
             "Successfully created new user:",
             userRecord.email,
             users
-          );
-          // Create users data en firestore
-          this.collection
+            );
+            // Create users data en firestore
+            this.collection
             .doc(users[i]["identityCard"])
             .set({
               name: jsonUsers[i]["name"],
@@ -53,6 +53,7 @@ class Massive {
         });
       messages.push(message);
     }
+    console.log(messages);
     return messages;
   }
 }
