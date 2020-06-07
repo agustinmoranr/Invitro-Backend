@@ -8,10 +8,12 @@ admin.initializeApp({
 
 //controllers
 const User = require('../components/user/controller');
+const Exam = require('../components/exam/controller');
 
 //db
 const db = admin.firestore();
 
 module.exports = {
   users: new User(db),
+  exams: new Exam(db)
 };
