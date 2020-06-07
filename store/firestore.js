@@ -19,5 +19,5 @@ module.exports = {
   login: new Login(db),
   users: new User(db),
   exams: new Exam(db),
-  massive: new Massive(db)
+  massive: new Massive(db, admin)
 };

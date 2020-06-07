@@ -10,13 +10,14 @@ const port = configAdmin.port || 8000;
 
 // middlewares
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false}));
 
 //routes
 app.use('/user', user);
 app.use('/exam', exam);
 app.use('/login', login);
 app.use('/uploadCSV',massive);
+app.use('/login', login);
 
 
 // server

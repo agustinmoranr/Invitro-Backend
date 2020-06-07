@@ -1,14 +1,10 @@
 const express = require("express");
 const { massive } = require("../../store/firestore");
 const router = express.Router();
-const multer = require("multer") 
-const fs = require("fs")
-const csv=require('csvtojson')
+const multer = require("multer");
+const csv = require('csvtojson');
 
-router.post("/", create);
-
-async function create(req, res, next) {
-  const csvfilename = `Users-${Date.now()}.csv`;
+const csvfilename = `Users-${Date.now()}.csv`;
   var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       // Uploads is the Upload_folder_name
@@ -27,15 +23,29 @@ async function create(req, res, next) {
     limits: { fileSize: maxSize },
   }).single("usersdata");
 
-  upload(req, res, function (err) {
-      const converter = csv()
+  router.post("/", (req, res, next) => {
+    let users;
+    upload(req, res, (err) => {
+      if(err) {
+        return next(err);
+      } else {
+        csv()
         .fromFile(`./temp/${csvfilename}`)
-        .then((json) => {
-          res.send(massive.insertUsers(json));
-          fs.unlinkSync(`./temp/${csvfilename}`);
-        });
-      console.log("llego aca", converter);
+        .then(async (json) => {
+          users = await massive.insertUsers(json);
+
+          //fs.unlinkSync(`../../temp/${csvfilename}`);
+          return res.status(201).json({
+            data: users,
+            message: "Users created correctly"
+          });
+        })
+        .catch((err) => {
+          return console.log(err.message);
+        }); 
+        return users;
+      }
+    });
   });
-}
 
 module.exports = router;
