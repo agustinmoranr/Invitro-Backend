@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const config = {
+const configAdmin = {
     //dev: process.env.NODE_ENV !== "production",
     port: process.env.PORT,
     type: process.env.TYPE,
@@ -15,4 +15,18 @@ const config = {
     client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
 };
 
-module.exports = { config };
+const firebaseConfig = {
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    databaseURL: process.env.DATABASE_URL,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID,
+    measurementId: process.env.MEASUREMENT_ID
+  };
+
+module.exports = { 
+    configAdmin,
+    firebaseConfig
+ };
