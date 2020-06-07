@@ -1,10 +1,16 @@
-const firebase = require('firebase-admin');
+//const firebase = require('firebase-admin');
+const firebase = require("firebase/app");
+require("firebase/storage");
+
+const { firebaseSimple } = require('../../config/firebaseConfig');
+
+firebase.initializeApp(firebaseSimple);
 
 class Exams {
     constructor(db) {
         this.db = db;
         this.collection = this.db.collection('exams');
-        this.storage = firebase.storage().ref;
+        //this.storage = firebase.storage();
     }
 
     async createExam(data, id) {
@@ -31,18 +37,19 @@ class Exams {
 
     async updateExam(idExam, pdfFile) {
         // is bactereologist?
+        var storageRef = firebase.storage().ref('pdfExams' + 'hola.pdf');
         console.log(pdfFile);
         console.log(idExam);
-        const uploadPdf = await this.storage.child('pdfExams/' + pdfFile.name).put(pdfFile);
+        const uploadPdf = await storageRef.put(pdfFile);
         uploadPdf
         .then(() => {
             console.log("pdf created on storage");
-            return uploadPdf.snapshot.ref.getDownloadURL();
+            return uploadPdf.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                return console.log('File available at: ', downloadURL);
+            });
         })
         // Upload completed successfully, now we can get the download URL
-        .then((downloadURL) => {
-            return console.log('File available at: ', downloadURL);
-        })
+        
         .catch((err) => {
             return console.log('error on pdf uploading', err);
         });

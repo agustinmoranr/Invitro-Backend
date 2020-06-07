@@ -3,8 +3,8 @@ const { exams } = require('../../store/firestore');
 
 const router = express.Router();
 
-router.post('/:id', create);
-router.put('/:id', update);
+//router.post('/:id', create);
+router.post('/:id', update);
 
 async function create(req, res, next) {
     const examData = req.body;

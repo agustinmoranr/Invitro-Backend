@@ -1,10 +1,10 @@
 //const firebase = require('firebase-admin');
-var firebase = require("firebase/app");
-require("firebase/auth");
+// var firebase = require("firebase/app");
+// require("firebase/auth");
 
-var {firebaseSimple} = require('../../config/firebaseConfig')
+// var {firebaseSimple} = require('../../config/firebaseConfig')
 
-firebase.initializeApp(firebaseSimple);
+// firebase.initializeApp(firebaseSimple);
 
 class Login {
     constructor(db) {

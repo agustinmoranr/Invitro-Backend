@@ -27,5 +27,5 @@ const firebaseSimple = {
 module.exports = {
     firebaseAdminConfig,
     firebaseSimple
-}  
+};  
  
