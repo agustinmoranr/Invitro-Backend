@@ -3,15 +3,19 @@ const app = express();
 const { configAdmin } = require('./config/index');
 const user = require('./components/user/network-user');
 const login = require('./components/login/network-login')
+const massive = require('./components/user-massive/network-user-massive')
 
 const port = configAdmin.port || 8000;
 
 // middlewarea
 app.use(express.json());
+app.use(express.urlencoded());
 
 //routes
 app.use('/user', user);
 app.use('/login', login)
+app.use('/uploadCSV',massive)
+
 
 // server
 app.listen(port || 8000, () => { 
