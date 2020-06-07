@@ -18,42 +18,42 @@ class Massive {
           disabled: false,
           displayName: `${jsonUsers[i]["name"]} ${jsonUsers[i]["lastName"]}`,
         })
-        .then(function(userRecord) {
+        .then((userRecord) => {
           // See the UserRecord reference doc for the contents of userRecord.
-          console.log(
+          return console.log(
             "Successfully created new user:",
             userRecord.email,
             users
             );
+        })
             // Create users data en firestore
-            this.collection
-            .doc(users[i]["identityCard"])
-            .set({
-              name: jsonUsers[i]["name"],
-              lastName: jsonUsers[i]["lastName"],
-              documentType: jsonUsers[i]["documentType"],
-              numberContact: jsonUsers[i]["numberContact"],
-              rol: jsonUsers[i]["rol"],
-              userStatus: true,
-            })
-            .then(() => {
-              console.log("succesfully inserted");
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+        .then(async () => {
+          return await this.collection
+          .doc(users[i]["identityCard"])
+          .set({
+            name: jsonUsers[i]["name"],
+            lastName: jsonUsers[i]["lastName"],
+            documentType: jsonUsers[i]["documentType"],
+            numberContact: jsonUsers[i]["numberContact"],
+            rol: jsonUsers[i]["rol"],
+            userStatus: true,
+          });
+        })
+        .then(() => {
+          console.log("succesfully inserted");
+
           return {
             "User email": jsonUsers[i]["email"],
             Result: "Succesfully created",
           };
         })
-        .catch( (error) => {
-          // console.log("Error creating new user:", error);
+        .catch((error) => {
+          console.log(error);
           return { "User email": jsonUsers[i]["email"], Result: error.code };
         });
       messages.push(message);
     }
-    console.log(messages);
+    console.log("hola", messages);
     return messages;
   }
 }

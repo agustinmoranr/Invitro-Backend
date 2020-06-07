@@ -24,19 +24,26 @@ const csvfilename = `Users-${Date.now()}.csv`;
   }).single("usersdata");
 
   router.post("/", (req, res, next) => {
+    let users;
     upload(req, res, (err) => {
       if(err) {
         return next(err);
       } else {
-        return csv()
+        csv()
         .fromFile(`./temp/${csvfilename}`)
-        .then((json) => {
-          return res.send(massive.insertUsers(json));
+        .then(async (json) => {
+          users = await massive.insertUsers(json);
+
           //fs.unlinkSync(`../../temp/${csvfilename}`);
+          return res.status(201).json({
+            data: users,
+            message: "Users created correctly"
+          });
         })
-        .catch(err => {
-          console.log(err.message);
-        });
+        .catch((err) => {
+          return console.log(err.message);
+        }); 
+        return users;
       }
     });
   });
