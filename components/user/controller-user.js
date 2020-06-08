@@ -74,6 +74,7 @@ class Users {
                     lastName: body.lastName,
                     documentType: body.documentType,
                     identityCard: body.identityCard,
+                    phoneNumber: body.phoneNumber,
                     numberContact: body.numberContact,
                     rol: body.rol,
                     userStatus: true
