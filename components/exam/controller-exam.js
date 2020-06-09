@@ -17,20 +17,18 @@ class Exams {
         // isMedic?
 
         const examData = {
-            dateCreate: firebase.firestore.Timestamp.fromDate(new Date()),
-            idClinicHistory: this.db.collection('clinicHistory').doc(id),
-            idUser: this.db.collection('user').doc('123'),
+            //dateCreate: firebase.firestore.Timestamp.fromDate(new Date("DD/MM/YYYY")),
+            date: null,
+            //idClinicHistory: this.db.collection('clinicHistory').doc(id),
+            //idUser: this.db.collection('user').doc('123'),
             status: "pending",
-            pdfId: "",
-            indications: data.indications,
-            aditionalNotes: data.aditionalNotes,
-            typeExam: {
-                idTypeExam: 'sdasdassda',
-                name: data.typeExam.name
-            }
+            results: null,
+            indications: null,
+            aditionalNotes: null,
+            typeExam: data.name
         };
 
-        const newExam = await this.collection.doc().set(examData);
+        const newExam = await this.collection.doc(examData.typeExam).set(examData);
         console.log(newExam);
         return newExam; 
     }

@@ -17,7 +17,6 @@ app.use('/user', user);
 app.use('/exam', exam);
 app.use('/login', login);
 app.use('/uploadCSV',massive);
-app.use('/login', login);
 
 
 // server

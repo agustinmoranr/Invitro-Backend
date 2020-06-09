@@ -3,15 +3,15 @@ const { exams } = require('../../store/firestore');
 
 const router = express.Router();
 
-//router.post('/:id', create);
+router.post('/', create);
 router.post('/:id', update);
 
 async function create(req, res, next) {
     const examData = req.body;
-    const idClinicHistory = req.params.id;
+    //const idClinicHistory = req.params.id;
 
     try {
-        const exam = await exams.createExam(examData, idClinicHistory);
+        const exam = await exams.createExam(examData);
 
         return res.status(201).json({
             data: exam, 
