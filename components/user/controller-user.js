@@ -26,27 +26,61 @@ class Users {
     }
 
     async getUserByIdentification(id) {
-        const user = await this.collection.doc(id).get()
+        let result;
+        let uid;
+        let user = [];
+
+        await this.collection.doc(id).get()
         .then(doc => {
             if (!doc.exists) {
             return  console.log('User Not found');
             } else {
               //console.log('User: ', doc.data());
-              return doc.data(); // firebase user document
+              uid = doc.data().identityCard;
+              result = doc.data();
+              return user.push(result); // firebase user document
             }
-          })
-          .catch(err => {
-            console.log('Error getting User Data', err);
-          });
-          console.log(user);
+        })
+        .then(async () => {
+            const medicalHistory = await this.db.collection('clinicHistory').where('identityCard', '==', uid).get();
+            return medicalHistory;
+        })  
+        .then((snapshot) => {
+            return snapshot.forEach((doc) => {
+                return user.push({
+                    clinicHistory: {
+                        id: doc.id,
+                        data: doc.data()
+                    }
+                });
+            });
+        })
+        .catch(err => {
+        console.log('Error getting User Data', err);
+        });
+        console.log(user);
         return user;
     }
 
     async createUser(body) {
         let newUser;
+
         let user = [];
+
         const email = body.email;
         const password = body.password;
+
+        let dataUser = {
+            name: body.name,
+            lastName: body.lastName,
+            documentType: body.documentType,
+            identityCard: body.identityCard,
+            phoneNumber: body.phoneNumber,
+            numberContact: body.numberContact,
+            rol: body.rol,
+            clinicHistoryId: body.identityCard,
+            userStatus: true
+        };
 
         //User exists?
         const isUserCreated = async () => {
@@ -69,19 +103,19 @@ class Users {
             //create And auth User
             await auth.createUser({email, password})
             .then(async () => {
-                let dataUser = {
-                    name: body.name,
-                    lastName: body.lastName,
-                    documentType: body.documentType,
-                    identityCard: body.identityCard,
-                    numberContact: body.numberContact,
-                    rol: body.rol,
-                    userStatus: true
+                newUser = await this.collection.doc(dataUser.identityCard).set(dataUser);
+                return newUser;
+            })
+            .then(async () => {
+                let history = {
+                    clinicHistoryId: dataUser.identityCard,
+                    [dataUser.clinicHistoryId]: []
                 };
-                return newUser = await this.collection.doc(dataUser.identityCard).set(dataUser);
+                const createClinicHistory = await this.db.collection('clinicHistory').doc().set(history);
+                return createClinicHistory;
             })
             .catch((err) =>{
-                console.log('Error on user Auth and creation: ', err.message);
+                console.log('Error on user Auth and creation: ', err);
                 return false;
             });
             return newUser;
