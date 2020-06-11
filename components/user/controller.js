@@ -107,7 +107,10 @@ class Users {
                 return newUser;
             })
             .then(async () => {
-                let history = {[dataUser.clinicHistoryId]: []};
+                let history = {
+                    clinicHistoryId: dataUser.identityCard,
+                    [dataUser.clinicHistoryId]: []
+                };
                 const createClinicHistory = await this.db.collection('clinicHistory').doc().set(history);
                 return createClinicHistory;
             })
