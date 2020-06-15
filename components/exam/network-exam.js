@@ -11,11 +11,11 @@ async function create(req, res, next) {
     //const idClinicHistory = req.params.id;
 
     try {
-        const exam = await exams.createExam(examData);
+        const exam = await exams.assignExam(examData);
 
         return res.status(201).json({
             data: exam, 
-            message: 'Exam created correctly'
+            message: 'Exam assigned correctly'
         });
     } catch (error) {
         return next(error);

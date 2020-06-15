@@ -1,10 +1,10 @@
-//const firebase = require('firebase-admin');
-const firebase = require("firebase/app");
-require("firebase/storage");
+const firebase = require('firebase-admin');
+// const firebase = require("firebase/app");
+// require("firebase/storage");
 
-const { firebaseSimple } = require('../../config/firebaseConfig');
+// const { firebaseSimple } = require('../../config/firebaseConfig');
 
-firebase.initializeApp(firebaseSimple);
+// firebase.initializeApp(firebaseSimple);
 
 class Exams {
     constructor(db) {
@@ -13,24 +13,72 @@ class Exams {
         //this.storage = firebase.storage();
     }
 
-    async createExam(data, id) {
+    async assignExam(data) {
         // isMedic?
+        //1 get typeExam
+        //update data
+        // insert in pacient clinichistory
+        let clinicDocument = []
+        let uid = data.identityCard;
 
-        const examData = {
-            //dateCreate: firebase.firestore.Timestamp.fromDate(new Date("DD/MM/YYYY")),
-            date: null,
-            //idClinicHistory: this.db.collection('clinicHistory').doc(id),
-            //idUser: this.db.collection('user').doc('123'),
-            status: "pending",
-            results: null,
-            indications: null,
-            aditionalNotes: null,
-            typeExam: data.name
+        const consultData = {
+            consult: {
+                date: firebase.firestore.Timestamp.fromDate(new Date()),
+                aditionalData: data.aditionalData || null,
+                indications: data.indications
+            },
+            exam: {
+                typeExam: data.type || null,
+                status: "pending",
+                results: null,
+            } || null
+            //aditionalNotes: null,
         };
 
-        const newExam = await this.collection.doc(examData.typeExam).set(examData);
-        console.log(newExam);
-        return newExam; 
+        // const exam = await this.collection.where('typeExam', '==', data.type).get()
+        // .then((snapshot) => {
+        //     let exam
+        //     snapshot.forEach((doc) => {
+        //         //console.log(doc.data())
+        //         exam = {typExam: doc.data(), }
+        //         return exam
+        //     })
+        //     return exam
+        // })
+        // .catch((err) => {
+        //     console.error(err)
+        // })
+        // console.log(exam)
+        
+        // const clinicDoc = await this.db.collection('clinicHistory').where('identityCard', '==', uid).get()
+        // .then((snapshot) => {
+        //     let consults
+        //     snapshot.forEach(async (doc) => {
+        //         //console.log(doc)
+        //         //console.log(doc.data())
+        //         consults = doc.data().identityCard
+        //         //return consults
+        //     })
+        //     return consults
+        // })
+        // .catch((err) => {
+        //     console.error(err)
+        // })
+        // console.log(clinicDoc);
+
+        let setExam = await this.db.collection('clinicHistory').doc(uid).update({
+            medicalConsults: firebase.firestore.FieldValue.arrayUnion(consultData)
+        })
+        .then((updated) => {
+            console.log('New consult record created')
+            return updated
+        })
+        .catch((err) => {
+            console.error('Error on consultCreation',err);
+        })
+        console.log(setExam)
+        
+        return setExam //clinicDocument;
     }
 
     async updateExam(idExam, pdfFile) {
