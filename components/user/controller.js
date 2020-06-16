@@ -30,33 +30,36 @@ class Users {
         let uid;
         let user = [];
 
+        //Get user
         await this.collection.doc(id).get()
         .then(doc => {
             if (!doc.exists) {
             return  console.log('User Not found');
             } else {
-              //console.log('User: ', doc.data());
               uid = doc.data().identityCard;
               result = doc.data();
               return user.push(result); // firebase user document
             }
         })
-        .then(async () => {
-            const medicalHistory = await this.db.collection('clinicHistory').where('identityCard', '==', uid).get();
-            return medicalHistory;
-        })  
+        .catch((err) => {
+            console.error('Error getting main user info', err);
+        });
+
+        // get user medical history
+        await this.db.collection('clinicHistory').doc(uid).collection('consults').get()
         .then((snapshot) => {
             return snapshot.forEach((doc) => {
+                let date = doc.data().date;
                 return user.push({
-                    clinicHistory: {
-                        id: doc.id,
-                        data: doc.data()
+                    [date]: {
+                    id: doc.id,
+                    data: doc.data()
                     }
                 });
             });
         })
         .catch(err => {
-        console.log('Error getting User Data', err);
+        console.log('Error getting user medical history', err);
         });
         console.log(user);
         return user;
@@ -107,12 +110,21 @@ class Users {
                 return newUser;
             })
             .then(async () => {
-                let history = {
+                // let history = {
+                //     clinicHistoryId: dataUser.identityCard,
+                //     [dataUser.clinicHistoryId]: []
+                // };
+                const createClinicHistory = await this.db.collection('clinicHistory')
+                .doc(dataUser.identityCard)
+                .collection('consults')
+                .add({
                     clinicHistoryId: dataUser.identityCard,
-                    [dataUser.clinicHistoryId]: []
-                };
-                const createClinicHistory = await this.db.collection('clinicHistory').doc().set(history);
+                    report: 'User Clinic history created correctly'
+                });
                 return createClinicHistory;
+            })
+            .then(async () => {
+                return await this.db.collection('clinicHistory').doc(dataUser.identityCard).set({clinicHistoryId: dataUser.identityCard})
             })
             .catch((err) =>{
                 console.log('Error on user Auth and creation: ', err);
