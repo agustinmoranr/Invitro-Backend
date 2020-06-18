@@ -23,7 +23,7 @@ class Exams {
 
         const consultData = {
             consult: {
-                date: firebase.firestore.Timestamp.fromDate(new Date()),
+                //date: new Date(),
                 aditionalData: data.aditionalData || null,
                 indications: data.indications
             },
@@ -65,13 +65,13 @@ class Exams {
         //     console.error(err)
         // })
         // console.log(clinicDoc);
-
-        let setExam = await this.db.collection('clinicHistory').doc(uid).update({
-            medicalConsults: firebase.firestore.FieldValue.arrayUnion(consultData)
-        })
-        .then((updated) => {
-            console.log('New consult record created')
-            return updated
+        let date = new Date();
+        let id = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+        let idString = id.toString();
+        console.log(idString)
+        let setExam = await this.db.collection('clinicHistory').doc(uid).collection('consults').doc(idString).set(consultData)
+        .then(() => {
+            return console.log('New consult record created')
         })
         .catch((err) => {
             console.error('Error on consultCreation',err);
