@@ -5,10 +5,12 @@ const user = require('./components/user/network-user');
 const login = require('./components/login/network-login');
 const massive = require('./components/user-massive/network-user-massive');
 const consult = require('./components/consult/network-consult');
+const cors = require('cors');
 
 const port = configAdmin.port || 8000;
 
 // middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
