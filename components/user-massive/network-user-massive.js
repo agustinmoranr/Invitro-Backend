@@ -1,5 +1,5 @@
 const express = require("express");
-const { massive } = require("../../store/firestore");
+const { massive } = require("../../store/firestoreAdmin");
 const router = express.Router();
 const multer = require("multer");
 const csv = require('csvtojson');

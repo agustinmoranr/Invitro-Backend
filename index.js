@@ -4,7 +4,7 @@ const { configAdmin } = require('./config/index');
 const user = require('./components/user/network-user');
 const login = require('./components/login/network-login');
 const massive = require('./components/user-massive/network-user-massive');
-const exam = require('./components/exam/network-exam');
+const consult = require('./components/consult/network-consult');
 
 const port = configAdmin.port || 8000;
 
@@ -14,9 +14,9 @@ app.use(express.urlencoded({ extended: false}));
 
 //routes
 app.use('/user', user);
-app.use('/exam', exam);
+app.use('/consult', consult);
 app.use('/login', login);
-app.use('/uploadCSV',massive);
+app.use('/uploadCSV', massive);
 
 
 // server

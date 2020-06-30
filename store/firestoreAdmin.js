@@ -7,10 +7,10 @@ admin.initializeApp({
 });
 
 //controllers
-const Exam = require('../components/exam/controller-exam');
 const User = require('../components/user/controller-user');
 const Login = require('../components/login/controller-login');
 const Massive = require('../components/user-massive/controller-user-massive');
+const Consult = require('../components/consult/controller-consult');
 
 //db
 const db = admin.firestore();
@@ -18,6 +18,6 @@ const db = admin.firestore();
 module.exports = {
   login: new Login(db),
   users: new User(db),
-  exams: new Exam(db),
-  massive: new Massive(db, admin)
+  massive: new Massive(db, admin),
+  consults: new Consult(db)
 };
