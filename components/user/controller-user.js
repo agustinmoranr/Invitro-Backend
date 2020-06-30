@@ -49,10 +49,9 @@ class Users {
         await this.db.collection('clinicHistory').doc(uid).collection('consults').get()
         .then((snapshot) => {
             return snapshot.forEach((doc) => {
-                let date = doc.data().date;
+                let date = doc.id;
                 return user.push({
                     [date]: {
-                    id: doc.id,
                     data: doc.data()
                     }
                 }); 
