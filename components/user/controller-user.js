@@ -92,13 +92,12 @@ class Users {
                 return user.push(userRecord.toJSON());
             })
             .catch((error) => {
-                return console.log('User is not in firebase Auth: ', error.message);
+                console.log("creating user...");
             });
         };
         user = await isUserCreated();
-        console.log(user);
 
-        if(user) {
+        if(user !== undefined) {
             console.log('The user already exists, try using a different email.', user);
             return false;
         } else {
@@ -109,7 +108,8 @@ class Users {
                 return newUser;
             })
             .catch(err => {
-                return console.error('Error on dataUser creation', err);
+                console.error('Error on dataUser creation', err);
+                return false;
             })
             .then(async () => {
                
