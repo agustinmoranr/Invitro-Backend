@@ -42,6 +42,10 @@ async function create(req, res, next) {
             message: 'User created correctly'
         });
     } catch (error) {
+        res.status(400).json({
+            message: 'Error on user creation',
+            error: error
+        });
         return next(error);
     }
 }
