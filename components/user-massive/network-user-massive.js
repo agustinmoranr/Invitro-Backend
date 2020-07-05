@@ -8,7 +8,7 @@ const csvfilename = `Users-${Date.now()}.csv`;
   var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       // Uploads is the Upload_folder_name
-      cb(null, "temp");
+      cb(null, "tempFiles");
     },
     filename: function (req, file, cb) {
       cb(null, csvfilename);
@@ -30,7 +30,7 @@ const csvfilename = `Users-${Date.now()}.csv`;
         return next(err);
       } else {
         csv()
-        .fromFile(`./temp/${csvfilename}`)
+        .fromFile(`./tempFiles/${csvfilename}`)
         .then(async (json) => {
           users = await massive.insertUsers(json);
 

@@ -40,7 +40,7 @@ class Consult {
                 exam: {
                     typeExam: data.type,
                     status: "pending",
-                    results: null,
+                    pdfURL: null
                 }
             };
         }

@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const configAdmin = {
+const firebaseAdminConf = {
     //dev: process.env.NODE_ENV !== "production",
     port: process.env.PORT,
     type: process.env.TYPE,
@@ -15,7 +15,7 @@ const configAdmin = {
     client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
 };
 
-const firebaseConfig = {
+const firebaseConf = {
     apiKey: process.env.API_KEY,
     authDomain: process.env.AUTH_DOMAIN,
     databaseURL: process.env.DATABASE_URL,
@@ -27,6 +27,6 @@ const firebaseConfig = {
   };
 
 module.exports = { 
-    configAdmin,
-    firebaseConfig
+    firebaseAdminConf,
+    firebaseConf
  };
