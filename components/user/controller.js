@@ -32,7 +32,6 @@ class Users {
         let uid = id;
         let user = [];
         let clinicHistory = [];
-        //let date;
 
         // get user medical history into array
         await this.db.collection('clinicHistory')
