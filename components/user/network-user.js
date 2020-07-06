@@ -12,7 +12,7 @@ async function list (req, res, next) {
     try {
         const typeUsers = await users.listUsers();
         return res.status(201).json({
-            data: typeUsers || {},
+            Users: typeUsers || {},
             message: 'Users listed correctly'
         });
     } catch (error) {
@@ -25,7 +25,7 @@ async function getOne(req, res, next) {
     try {
         const userByIdentificationCard = await users.getUserByIdentification(identificationCardNumber);
         return res.status(201).json({
-            data: userByIdentificationCard,
+            User: userByIdentificationCard,
             message: 'User retrieved correctly'
         });
     } catch (error) {

@@ -41,10 +41,11 @@ class Users {
         
         .then((snapshot) => {
             return snapshot.forEach((doc) => {
-                let date = doc.id;
+                let dateId = doc.id;
                 
                 return clinicHistory.push({
-                    [date]: doc.data()
+                    dateId: dateId,
+                    consult: doc.data()
                 });
             });
         })
