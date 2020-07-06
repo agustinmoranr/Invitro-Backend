@@ -1,11 +1,3 @@
-const firebase = require('firebase-admin');
-// const firebase = require("firebase/app");
-// require("firebase/storage");
-
-// const { firebaseSimple } = require('../../config/firebaseConfig');
-
-// firebase.initializeApp(firebaseSimple);
-
 class Consult {
     constructor(db) {
         this.db = db;
@@ -16,6 +8,7 @@ class Consult {
     
     async createConsult(data) {
         let uid = data.identityCard;
+        let exams = [];
         let consultData = {};
         
         let date = new Date();
@@ -30,20 +23,30 @@ class Consult {
                 }
             };
         }
-        else {
-            consultData = {
-                consult: {
-                    date: new Date(),
-                    aditionalData: data.aditionalData || null,
-                    indications: data.indications
-                },
-                exam: {
-                    typeExam: data.type,
-                    status: "pending",
-                    results: null,
-                }
-            };
-        }
+
+        let typeExam = data.exams.map((key) => {
+            return key;
+        });
+        
+        typeExam.forEach((exam) => {
+            let type = exam.type;
+
+            return exams.push({
+                typeExam: type,
+                status: "pending",
+                pdfURL: null
+            });
+        });
+
+        consultData = {
+            consult: {
+                date: new Date().toDateString(),
+                aditionalData: data.aditionalData || null,
+                indications: data.indications
+            },
+            exams: exams
+        };
+        console.log(consultData);
 
         return await this.db.collection('clinicHistory').doc(uid).collection('consults').doc(dateId).set(consultData)
         .then(() => {
@@ -53,27 +56,6 @@ class Consult {
             console.error('Error on consultCreation',err);
         });
     }
-
-//     async updateExam(idExam, pdfFile) {
-//         // is bactereologist?
-//         var storageRef = firebase.storage().ref('pdfExams' + 'hola.pdf');
-//         console.log(pdfFile);
-//         console.log(idExam);
-//         const uploadPdf = await storageRef.put(pdfFile);
-//         uploadPdf
-//         .then(() => {
-//             console.log("pdf created on storage");
-//             return uploadPdf.snapshot.ref.getDownloadURL().then((downloadURL) => {
-//                 return console.log('File available at: ', downloadURL);
-//             });
-//         })
-//         // Upload completed successfully, now we can get the download URL
-        
-//         .catch((err) => {
-//             return console.log('error on pdf uploading', err);
-//         });
-//         return uploadPdf;
-//     }
- }
+}
 
 module.exports = Consult;
