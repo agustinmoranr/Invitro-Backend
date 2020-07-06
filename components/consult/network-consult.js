@@ -4,11 +4,9 @@ const { consults } = require('../../store/firestoreAdmin');
 const router = express.Router();
 
 router.post('/', create);
-//router.post('/:id', update);
 
 async function create(req, res, next) {
     const consultData = req.body;
-    //const idClinicHistory = req.params.id;
 
     try {
         const consult = await consults.createConsult(consultData);
