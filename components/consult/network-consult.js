@@ -16,6 +16,10 @@ async function create(req, res, next) {
             message: 'Exam assigned correctly'
         });
     } catch (error) {
+        res.status(400).json({
+            data: false, 
+            message: 'An error ocurred during consult creation'
+        });
         return next(error);
     }
 }
