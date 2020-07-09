@@ -30,8 +30,9 @@ class Users {
     async getUserByIdentification(id) {
         let result;
         let uid = id;
-        let user = [];
-        let clinicHistory = [];
+        let User = [];
+        let ClinicHistory = [];
+        let Exams = [];
 
         // get user medical history into array
         await this.db.collection('clinicHistory')
@@ -41,12 +42,42 @@ class Users {
         
         .then((snapshot) => {
             return snapshot.forEach((doc) => {
-                let dateId = doc.id;
-                
-                return clinicHistory.push({
-                    dateId: dateId,
-                    consult: doc.data()
-                });
+                if(!doc.exists) {
+                    return ClinicHistory.push({message: 'This user has never had a consult.'});
+                }
+                else {
+                    let consultId = doc.id;
+                    
+                    return ClinicHistory.push({
+                        consultId: consultId,
+                        consult: doc.data()
+                    });
+                }
+            });
+        })
+        .catch(err => {
+            console.log('Error getting user medical history', err);
+        });
+
+        // get the exams assigned to user
+        await this.db.collection('exam')
+        .doc(uid)
+        .collection('examsAssigned')
+        .get()
+        
+        .then((snapshot) => {
+            return snapshot.forEach((doc) => {
+                if(!doc.exists) {
+                    return Exams.push({message: "No exams have been assigned to this user"});
+                }
+                else {
+                    let examId = doc.id;
+                    
+                    return Exams.push({
+                        examId: examId,
+                        exam: doc.data()
+                    });
+                }
             });
         })
         .catch(err => {
@@ -63,10 +94,11 @@ class Users {
                 result = doc.data();
 
                 //firebase user document
-                return user.push({ 
+                return User.push({ 
                     id: uid,
                     userData: result, 
-                    clinicHistory
+                    ClinicHistory,
+                    Exams
                 }); 
             }
         })
@@ -74,8 +106,8 @@ class Users {
             console.error('Error getting main user info', err);
         });
 
-        console.log(user);
-        return user;
+        //console.log(user);
+        return User;
     }
 
     async createUser(body) {
@@ -131,8 +163,7 @@ class Users {
                 return newUser;
             })
             .catch(err => {
-                console.error('Error on dataUser creation', err);
-                return false;
+                throw new Error ('Error on user creation. please, try again', err);
             })
 
         //set medical history document
@@ -145,23 +176,17 @@ class Users {
                 return console.error(err);
             })
 
-        //add "consults" as a medical history subcollections
+        //set exams assigment document
             .then(async () => {
-                return await this.db.collection('clinicHistory')
+                return await this.db.collection('exam')
                 .doc(dataUser.identityCard)
-                .collection('consults')
-                .add({
-                    clinicHistoryId: dataUser.identityCard,
-                    report: 'User Clinic history created correctly',
-                    date: new Date()
-                });
+                .set({examAssignmentId: dataUser.identityCard});
             })
             .catch((err) =>{
-                console.error('Error on user Auth and creation: ', err);
-                return false;
+                return console.error(err);
             });
 
-            return newUser;
+        return newUser;
         }
     }
 
