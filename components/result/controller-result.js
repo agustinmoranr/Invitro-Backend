@@ -1,36 +1,60 @@
+const { nanoid } = require("nanoid");
+
 class Result {
-    constructor(db, storage) {
+    constructor(db, bucket) {
         this.db = db;
-        this.collection = this.db.collection('clinicHistory');
-        this.storage = storage;
-        //this.storage.ref = this.storage.ref('/pdfExams')
+        this.collection = this.db.collection('exam');
+        this.bucket = bucket;
     }
 
-    async uploadStorage(file) {
-        if(!file) {
-            return "You didn't select a file";
+    async uploadStorage(file, userId, examId) {
+
+        // file?
+        if(!file || !userId || !examId) {
+            return "Bad request: Please send a pdf file and other parameters";
         }
-        await this.storage.ref(file.originalname).put(file.buffer)
-        .then(() => {
-            return console.log("Pdf uploaded correctly");
-        })
-        .catch((err) => {
-            return console.error(err);
+        
+        //Create new blob using "pdfname" as reference
+        const blob = this.bucket.file(file.pdfname);
+
+        // WriteableStream to set it into storage
+        const blobWriter = blob.createWriteStream({
+            metadata: {
+                contentType: file.mimetype,
+            }
         });
 
-        return await this.collection.doc("querycollections").collection("consults").doc("2-7-2020-18:11:43").update({
-            "exam.pdfURL": file.originalname,
-            "exam.status": "completed"
-        })
-        .then(() => {
-            return console.log("pdfURL actualizado correctamente.");
-        })
-        .catch((err) => {
-            return err, "Error al añadir url";
+        //error?
+        blobWriter.on('error', (err) => {
+            console.error(err);
+            throw new Error('Error uploding your file. Please try sending it again');
         });
 
-        //console.log(file);
-        //let storageRef = this.storage.ref(file);
+        // when 'finish' (consume data event). Define URL
+        blobWriter.on('finish', async() => {
+            const publicURL = `https://firebasestorage.googleapis.com/v0/b/${
+                this.bucket.name
+            }/o/${encodeURI(blob.name)}?alt=media`;
+            
+            console.log(publicURL);
+
+            //update user Exam with new status and URL
+            return await this.collection.doc(userId).collection("examsAssigned").doc(examId).update({
+                "pdfURL": publicURL,
+                "status": true
+            })
+            .then(() => {
+                return console.log("pdfURL actualizado correctamente.");
+            })
+            .catch((err) => {
+                return err, "Error al añadir url";
+            });
+        });
+
+        // No more data to consumed? Let's "end"
+        await blobWriter.end(file.buffer);
+        
+        return true;
     }
 }
 
