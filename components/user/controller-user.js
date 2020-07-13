@@ -1,3 +1,5 @@
+const { getSubCollectionDoc, updateAuthenticationValue } = require('../../utils/firebase-methods');
+
 class Users {
     constructor(auth, db) {
         this.auth = auth;
@@ -26,62 +28,35 @@ class Users {
     }
 
     async getUserByIdentification(id) {
-        let result;
         let uid = id;
         let User = [];
         let ClinicHistory = [];
         let Exams = [];
 
         // get user medical history into array
-        await this.db.collection('clinicHistory')
-        .doc(uid)
-        .collection('consults')
-        .get()
-        
-        .then((snapshot) => {
-            return snapshot.forEach((doc) => {
-                if(!doc.exists) {
-                    return ClinicHistory.push({message: 'This user has never had a consult.'});
-                }
-                else {
-                    let consultId = doc.id;
-                    
-                    return ClinicHistory.push({
-                        consultId: consultId,
-                        consult: doc.data()
-                    });
-                }
-            });
-        })
-        .catch(err => {
-            console.log('Error getting user medical history', err);
-        });
-
+        await getSubCollectionDoc(
+            this.db.collection('clinicHistory'), //query
+            uid, //docId
+            'consults', //subcollection
+            ClinicHistory, //array to push data
+            'This user has never had a consult.', //message if doc not exists
+            "consultId", //propId
+            "consult", //prop data
+            'Error gettig consult.' // error message
+            );
+    
         // get the exams assigned to user
-        await this.db.collection('exam')
-        .doc(uid)
-        .collection('examsAssigned')
-        .get()
-        
-        .then((snapshot) => {
-            return snapshot.forEach((doc) => {
-                if(!doc.exists) {
-                    return Exams.push({message: "No exams have been assigned to this user"});
-                }
-                else {
-                    let examId = doc.id;
-                    
-                    return Exams.push({
-                        examId: examId,
-                        exam: doc.data()
-                    });
-                }
-            });
-        })
-        .catch(err => {
-            console.log('Error getting user medical history', err);
-        });  
-            
+        await getSubCollectionDoc(
+            this.db.collection('exam'),
+            uid,
+            'examsAssigned',
+            Exams,
+            'No exams have been assigned to this user.',
+            "examId",
+            "exam",
+            'Error getting user exams'
+            );
+
         //Set complete user data
         await this.collection.doc(id).get()
         .then(doc => {
@@ -89,12 +64,10 @@ class Users {
             return  console.log('User Not found');
             } 
             else {
-                result = doc.data();
-
-                //firebase user document
+                //firestore user document
                 return User.push({ 
                     id: uid,
-                    userData: result, 
+                    userData: doc.data(), 
                     ClinicHistory,
                     Exams
                 }); 
@@ -187,54 +160,47 @@ class Users {
         }
     }
 
-    async ableAndDisableUser(id, body) {
-        await this.auth.getUserByEmail(body.email)
-        .then(async (userRecord) => {
-            console.log('user', userRecord.toJSON());
-            return await this.auth.updateUser(userRecord.uid, {
-                "disabled": body.disabled
-            })
-            .then((userRecord) => {
-                return console.log('Successfully updated user', userRecord.toJSON());
-            });
-        })  
+    async ableAndDisableUser(id, newData) { 
+        return await updateAuthenticationValue(
+            this.auth.getUserByEmail(newData.email), // getUser
+            this.auth, //authentication firebase service
+            "disabled", //Prop to update
+            newData.disabled //new prop value
+        )
+        // update value in firestore
         .then(async () => {
-            return await this.updateUserInfo(id, {"userStatus": !body.disabled});
+            return await this.updateUserInfo(id, {"userStatus": !newData.disabled});
         })
         .catch((err) => {
             console.log('Error updating user', err);
         });
     }
 
-    async changeEmail(id, body) {
-        await this.auth.getUserByEmail(body.lastEmail)
-        .then(async (userRecord) => {
-            console.log('user', userRecord.toJSON());
-            return await this.auth.updateUser(userRecord.uid, {
-                "email": body.newEmail
-            })
-            .then((userRecord) => {
-                return console.log('Successfully updated user', userRecord.toJSON());
-            });
-        })  
+    async changeEmail(id, newData) {
+        return await updateAuthenticationValue(
+            this.auth.getUserByEmail(newData.currentEmail), // getUser
+            this.auth, //authentication firebase service
+            "email", //Prop to update
+            newData.newEmail //new prop value
+        ) 
+        // update email in firestore
         .then(async () => {
-            return await this.updateUserInfo(id, {"email": body.newEmail});
+            return await this.updateUserInfo(id, {"email": newData.newEmail});
         })
         .catch((err) => {
             console.log('Error updating user', err);
         });
     }
 
-    async updateUserInfo(id, body) {
-        const documentId = id;
+    async updateUserInfo(id, newData) {
+        const docId = id;
         
         //Define doc and update it
-        const newData = await this.collection
-        .doc(documentId)
-        .update(body);
+        return await this.collection
+        .doc(docId)
+        .update(newData);
 
         //console.log(newData);
-        return newData;
     }
 }
 
