@@ -62,7 +62,7 @@ async function update(req, res, next) {
         else if(typeof newData.disabled !== 'undefined' || null && newData.email){
             updatedUser = await users.ableAndDisableUser(identificationNumber, newData);
         }
-        else if(newData.lastEmail && newData.newEmail) {
+        else if(newData.currentEmail && newData.newEmail) {
             updatedUser = await users.changeEmail(identificationNumber, newData);
         }
         else {
