@@ -21,11 +21,11 @@ async function list (req, res, next) {
 }
 
 async function getOne(req, res, next) {
-    const identificationCardNumber = req.params.id;
+    const identificationNumber = req.params.id;
     try {
-        const userByIdentificationCard = await users.getUserByIdentification(identificationCardNumber);
+        const userById = await users.getUserByIdentification(identificationNumber);
         return res.status(201).json({
-            User: userByIdentificationCard,
+            User: userById,
             message: 'User retrieved correctly'
         });
     } catch (error) {
@@ -51,15 +51,32 @@ async function create(req, res, next) {
 }
 
 async function update(req, res, next) {
-    const identificationCardNumber = req.params.id;
+    let updatedUser;
+    const identificationNumber = req.params.id;
     const newData = req.body;
+    
     try {
-        const updatedUser = await users.updateUser(identificationCardNumber, newData);
+        if(newData.identityCard) {
+            throw new error('Is not posible to update identityCard from user, please create another user');
+        }
+        else if(typeof newData.disabled !== 'undefined' || null && newData.email){
+            updatedUser = await users.ableAndDisableUser(identificationNumber, newData);
+        }
+        else if(newData.lastEmail && newData.newEmail) {
+            updatedUser = await users.changeEmail(identificationNumber, newData);
+        }
+        else {
+            updatedUser = await users.updateUserInfo(identificationNumber, newData);
+        }
         return res.status(201).json({
             data: updatedUser,
             message: 'User updated correctly'
         });
     } catch (error) {
+        res.status(400).json({
+            data: false,
+            message: 'Error on user updating'
+        });
         return next(error);
     }
 }

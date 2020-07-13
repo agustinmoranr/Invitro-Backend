@@ -1,8 +1,6 @@
-const firebase = require('firebase-admin');
-const auth = firebase.auth();
-
 class Users {
-    constructor(db) {
+    constructor(auth, db) {
+        this.auth = auth;
         this.db = db;
         this.collection = this.db.collection('user');
     }
@@ -124,16 +122,15 @@ class Users {
             lastName: body.lastName,
             email: email,
             documentType: body.documentType,
-            identityCard: body.identityCard,
+            identityNumber: body.identityNumber,
             phoneNumber: body.phoneNumber,
             numberContact: body.numberContact,
             rol: body.rol,
-            clinicHistoryId: body.identityCard,
             userStatus: true,
         };
 
         //User exists?
-        await auth.getUserByEmail(email)
+        await this.auth.getUserByEmail(email)
         .then((userRecord) => {
             return user.push(userRecord.email);
         })
@@ -148,7 +145,7 @@ class Users {
 
         else {
         //create user in firebase Authentication and firestore
-            await auth.createUser({
+            await this.auth.createUser({
                 email,
                 password,
                 emailVerified: false,
@@ -157,7 +154,7 @@ class Users {
             })
             .then(async () => {
                 newUser = await this.collection
-                .doc(dataUser.identityCard)
+                .doc(dataUser.identityNumber)
                 .set(dataUser);
 
                 return newUser;
@@ -169,8 +166,8 @@ class Users {
         //set medical history document
             .then(async () => {
                 return await this.db.collection('clinicHistory')
-                .doc(dataUser.identityCard)
-                .set({clinicHistoryId: dataUser.identityCard});
+                .doc(dataUser.identityNumber)
+                .set({identityNumber: dataUser.identityNumber});
             })
             .catch((err) =>{
                 return console.error(err);
@@ -179,8 +176,8 @@ class Users {
         //set exams assigment document
             .then(async () => {
                 return await this.db.collection('exam')
-                .doc(dataUser.identityCard)
-                .set({examAssignmentId: dataUser.identityCard});
+                .doc(dataUser.identityNumber)
+                .set({identityNumber: dataUser.identityNumber});
             })
             .catch((err) =>{
                 return console.error(err);
@@ -190,7 +187,45 @@ class Users {
         }
     }
 
-    async updateUser(id, body) {
+    async ableAndDisableUser(id, body) {
+        await this.auth.getUserByEmail(body.email)
+        .then(async (userRecord) => {
+            console.log('user', userRecord.toJSON());
+            return await this.auth.updateUser(userRecord.uid, {
+                "disabled": body.disabled
+            })
+            .then((userRecord) => {
+                return console.log('Successfully updated user', userRecord.toJSON());
+            });
+        })  
+        .then(async () => {
+            return await this.updateUserInfo(id, {"userStatus": !body.disabled});
+        })
+        .catch((err) => {
+            console.log('Error updating user', err);
+        });
+    }
+
+    async changeEmail(id, body) {
+        await this.auth.getUserByEmail(body.lastEmail)
+        .then(async (userRecord) => {
+            console.log('user', userRecord.toJSON());
+            return await this.auth.updateUser(userRecord.uid, {
+                "email": body.newEmail
+            })
+            .then((userRecord) => {
+                return console.log('Successfully updated user', userRecord.toJSON());
+            });
+        })  
+        .then(async () => {
+            return await this.updateUserInfo(id, {"email": body.newEmail});
+        })
+        .catch((err) => {
+            console.log('Error updating user', err);
+        });
+    }
+
+    async updateUserInfo(id, body) {
         const documentId = id;
         
         //Define doc and update it
@@ -198,7 +233,7 @@ class Users {
         .doc(documentId)
         .update(body);
 
-        console.log(newData);
+        //console.log(newData);
         return newData;
     }
 }

@@ -24,13 +24,14 @@ const Result = require('../components/result/controller-result');
 
 //services 
 const db = admin.firestore();
+const auth = admin.auth();
 
 //Bucket on firebase storage
 const storageBucket = admin.storage().bucket(firebaseConfig.storageBucket);
 
 module.exports = {
   login: new Login(db),
-  users: new User(db),
+  users: new User(auth, db),
   massive: new Massive(db, admin),
   consults: new Consult(db),
   results: new Result(db, storageBucket)
