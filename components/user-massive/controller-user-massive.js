@@ -17,7 +17,7 @@ class Massive {
         .createUser({
           email: jsonUsers[i]["email"],
           emailVerified: false,
-          password: "ENtrANYmaTen",
+          password: jsonUsers[i]["password"],
           disabled: false,
           displayName: `${jsonUsers[i]["name"]} ${jsonUsers[i]["lastName"]}`,
         })
@@ -33,13 +33,13 @@ class Massive {
         // Create users data en firestore
         .then(async () => {
           return await this.collection
-          .doc(jsonUsers[i]["identityCard"])
+          .doc(jsonUsers[i]["identityNumber"])
           .set({
             name: jsonUsers[i]["name"],
             lastName: jsonUsers[i]["lastName"],
             email: jsonUsers[i]["email"],
             documentType: jsonUsers[i]["documentType"],
-            identityCard: jsonUsers[i]["identityCard"],
+            identityNumber: jsonUsers[i]["identityNumber"],
             numberContact: jsonUsers[i]["numberContact"],
             phoneNumber: jsonUsers[i]["phoneNumber"],
             rol: jsonUsers[i]["rol"],
@@ -50,8 +50,8 @@ class Massive {
         //set medical history document
         .then(async () => {
           return await this.db.collection('clinicHistory')
-          .doc(jsonUsers[i]["identityCard"])
-          .set({clinicHistoryId: jsonUsers[i]["identityCard"]});
+          .doc(jsonUsers[i]["identityNumber"])
+          .set({clinicHistoryId: jsonUsers[i]["identityNumber"]});
         })
         .catch((err) =>{
           return console.error(err);
@@ -60,8 +60,8 @@ class Massive {
         //set exams assigment document
         .then(async () => {
           return await this.db.collection('exam')
-          .doc(jsonUsers[i]["identityCard"])
-          .set({examAssignmentId: jsonUsers[i]["identityCard"]});
+          .doc(jsonUsers[i]["identityNumber"])
+          .set({examAssignmentId: jsonUsers[i]["identityNumber"]});
         })
         .catch((err) =>{
           return console.error(err);
