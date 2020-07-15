@@ -1,5 +1,5 @@
 const express = require('express');
-const { login } = require('../../store/firestoreAdmin');
+const { login } = require('../../store/firestore');
 
 const router = express.Router();
 
@@ -11,13 +11,22 @@ async function singIn (req, res, next) {
         email: req.body.email,
         password: req.body.password
     }
-    try{
-        const user = await login.singIn(authUser.email, authUser.password);
-        res.status(201).json({
-            data: authUser,
-            message: 'User created correctly'
-        })
-        console.log(user) 
+    try{  
+        const rol = await login.returnRol(authUser.email);           
+        console.log(rol)
+        const user = await login.singIn( authUser.email, authUser.password);        
+        if (user.code == 200){
+            res.status(200).json({
+                code:200,
+                message: "Authentication it's ok",
+                rol: rol
+            })
+        }else if (user.code == 404){
+            res.status(404).json({
+                code:404,
+                message: user.message
+            })
+        }
     }catch(error){
         next(error)
     }
