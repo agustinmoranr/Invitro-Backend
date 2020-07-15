@@ -12,7 +12,7 @@ admin.initializeApp({
 const firebase = require("firebase/app");
 require("firebase/firestore");
 require("firebase/storage");
-require("firebase/auth")
+require("firebase/auth");
 
 firebase.initializeApp(firebaseConfig);
 

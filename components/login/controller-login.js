@@ -1,27 +1,27 @@
 class Login {
   constructor(db, auth) {
-    this.auth = auth
+    this.auth = auth;
     this.db = db;
     this.collection = this.db.collection("user");
   }
   
   async returnRol(email) {
-    let rol = []
-    this.collection.where("email", "==", email).get()
+    let rol = [];
+    await this.collection.where("email", "==", email).get()
       .then(snapshot => {
         if (snapshot.empty) {
           return console.log("No matching userDocuments.");
         }
         return snapshot.forEach((doc) => {
-            return rol.push(
-                doc.data()             
-            )
+          //console.log(doc.data())
+            return rol.push(doc.data().rol);
         });
       })
       .catch((err) => {
-          console.log('Error getting documents', err)
-      })
-    return rol
+          console.log('Error getting documents', err);
+      });
+      console.log(rol);
+    return rol;
   }
 
   async singIn(email, password) {
