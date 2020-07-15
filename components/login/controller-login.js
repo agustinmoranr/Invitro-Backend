@@ -1,21 +1,21 @@
 class Login {
-  constructor(db) {
+  constructor(db, auth) {
+    this.auth = auth
     this.db = db;
     this.collection = this.db.collection("user");
   }
   
   async returnRol(email) {
-    let rol = ["data"]
+    let rol = []
     this.collection.where("email", "==", email).get()
       .then(snapshot => {
         if (snapshot.empty) {
           return console.log("No matching userDocuments.");
         }
         return snapshot.forEach((doc) => {
-            console.log( doc._fieldsProto.rol.stringValue )
-            return rol.push({
-                data: doc.data()             
-            })
+            return rol.push(
+                doc.data()             
+            )
         });
       })
       .catch((err) => {
@@ -25,8 +25,7 @@ class Login {
   }
 
   async singIn(email, password) {
-    const singIn = firebase
-      .auth()
+    const singIn = this.auth
       .signInWithEmailAndPassword(email, password)
       .then(function (userRecord) {
         return {
