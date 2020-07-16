@@ -1,5 +1,3 @@
-const { nanoid } = require("nanoid");
-
 class Result {
     constructor(db, bucket) {
         this.db = db;

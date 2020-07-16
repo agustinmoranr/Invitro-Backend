@@ -63,7 +63,7 @@ class Consult {
 
             return await setConsultData(uid, consultId, consult);
         }
-        // If also exams. Also set exams
+        // If there are exams. Also set exams
         else {
             consult = {
                 consultId: consultId,

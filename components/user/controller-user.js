@@ -1,4 +1,4 @@
-const { getSubCollectionDoc, updateAuthenticationValue } = require('../../utils/firebase-methods');
+const { getSubCollectionDoc, updateAuthenticationValue } = require('../../utils/reusable-firebase-methods');
 
 class Users {
     constructor(auth, db) {
@@ -45,7 +45,7 @@ class Users {
             'Error gettig consult.' // error message
             );
     
-        // get the exams assigned to user
+        // get the user exams assigned 
         await getSubCollectionDoc(
             this.db.collection('exam'),
             uid,
@@ -90,13 +90,12 @@ class Users {
         const password = body.password;
 
         // User document in firestore
-        let dataUser = {
+        let userData = {
             name: body.name,
             lastName: body.lastName,
             email: email,
             documentType: body.documentType,
             identityNumber: body.identityNumber,
-            phoneNumber: body.phoneNumber,
             numberContact: body.numberContact,
             rol: body.rol,
             userStatus: true,
@@ -123,12 +122,12 @@ class Users {
                 password,
                 emailVerified: false,
                 disabled: false,
-                displayName: `${dataUser.name} ${dataUser.lastName}`,
+                displayName: `${userData.name} ${userData.lastName}`,
             })
             .then(async () => {
                 newUser = await this.collection
-                .doc(dataUser.identityNumber)
-                .set(dataUser);
+                .doc(userData.identityNumber)
+                .set(userData);
 
                 return newUser;
             })
@@ -139,8 +138,8 @@ class Users {
         //set medical history document
             .then(async () => {
                 return await this.db.collection('clinicHistory')
-                .doc(dataUser.identityNumber)
-                .set({identityNumber: dataUser.identityNumber});
+                .doc(userData.identityNumber)
+                .set({identityNumber: userData.identityNumber});
             })
             .catch((err) =>{
                 return console.error(err);
@@ -149,8 +148,8 @@ class Users {
         //set exams assigment document
             .then(async () => {
                 return await this.db.collection('exam')
-                .doc(dataUser.identityNumber)
-                .set({identityNumber: dataUser.identityNumber});
+                .doc(userData.identityNumber)
+                .set({identityNumber: userData.identityNumber});
             })
             .catch((err) =>{
                 return console.error(err);
@@ -195,7 +194,7 @@ class Users {
     async updateUserInfo(id, newData) {
         const docId = id;
         
-        //Define doc and update it
+        //Define which doc and update it
         return await this.collection
         .doc(docId)
         .update(newData);

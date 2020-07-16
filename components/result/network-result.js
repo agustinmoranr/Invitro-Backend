@@ -11,7 +11,7 @@ const PDF = multer({
     limits: {
     fileSize: 5 * 1024 * 1024, // limiting files size to 5 MB
     },
-}).single("sangre" || "glucosa");
+}).single("results");
 
 router.post('/', PDF, uploadPDF);
 
@@ -38,7 +38,7 @@ async function uploadPDF(req, res, next) {
     } catch (error) {
         res.status(500).json({
             data: false,
-            message: "An error ocurred. Please try your query again"
+            message: "An error ocurred. Please try sending your file again"
         });
         return next(error);
     }

@@ -41,7 +41,6 @@ class Massive {
             documentType: jsonUsers[i]["documentType"],
             identityNumber: jsonUsers[i]["identityNumber"],
             numberContact: jsonUsers[i]["numberContact"],
-            phoneNumber: jsonUsers[i]["phoneNumber"],
             rol: jsonUsers[i]["rol"],
             userStatus: true,
           });

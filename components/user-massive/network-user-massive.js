@@ -24,7 +24,7 @@ const csvfilename = `Users-${Date.now()}.csv`;
   var upload = multer({
     storage: storage,
     limits: { fileSize: maxSize },
-  }).single("usersdata");
+  }).single("usersCSV");
 
   router.post("/", (req, res, next) => {
     let users;
