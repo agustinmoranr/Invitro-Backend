@@ -13,7 +13,7 @@ const PDF = multer({
     },
 }).single("results");
 
-router.post('/', PDF, uploadPDF);
+router.post('/:id', PDF, uploadPDF);
 
 async function uploadPDF(req, res, next) {
 
@@ -26,11 +26,12 @@ async function uploadPDF(req, res, next) {
     });
 
     let file = req.file;
-    let userId = req.body.userId;
+    let userId = req.params.id;
     let examId = req.body.examId;
 
     try {
         const upload = await results.uploadStorage(file, userId, examId);
+
         return res.status(201).json({
             data: upload,
             message: "File upload correctly to store"

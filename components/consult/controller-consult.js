@@ -5,9 +5,10 @@ class Consult {
         this.db = db;
     }
     
-    async createConsult(data) {
-        let uid = data.identityCard;
+    async createConsult(data, id) {
+        let uid = id;
         let consult = {};
+        let examsID = [];
 
         //defining Id Consult Document
         let date = new Date();
@@ -25,7 +26,7 @@ class Consult {
                 return console.log('New consult record created');
             })
             .catch((err) => {
-                console.error('Error on consult creation',err);
+                console.error('Error on consult creation', err);
             });
         };
 
@@ -65,19 +66,10 @@ class Consult {
         }
         // If there are exams. Also set exams
         else {
-            consult = {
-                consultId: consultId,
-                date: new Date().toDateString(),
-                aditionalData: data.aditionalData || null,
-                indications: data.indications
-            };
-            
-            await setConsultData(uid, consultId, consult);
-    
             let typeExam = data.exams.map((type) => {
                 return type;
             });
-    
+            
             typeExam.forEach(async (exam) => {
                 let type = exam.type;
                 let id = nanoid();
@@ -90,11 +82,28 @@ class Consult {
                     pdfURL: null,
                 };
                 
+                examsID.push(id);
+                
                 //set each exam
                 await setExamData(uid, id, Exam);
             });
+
+            // set consult
+            consult = {
+                consultId: consultId,
+                date: new Date().toDateString(),
+                aditionalData: data.aditionalData || null,
+                indications: data.indications,
+                examsId: examsID
+            };
+            
+            await setConsultData(uid, consultId, consult);
         }
-        return true;
+        return {
+            userId: uid,
+            consultId: consultId,
+            examsId: examsID || null
+        };
     }
 }
 

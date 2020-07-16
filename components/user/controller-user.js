@@ -155,17 +155,21 @@ class Users {
                 return console.error(err);
             });
 
-        return newUser;
+        return {
+            email: email,
+            identityNumber: userData.identityNumber
+        };
         }
     }
 
     async ableAndDisableUser(id, newData) { 
-        return await updateAuthenticationValue(
+        await updateAuthenticationValue(
             this.auth.getUserByEmail(newData.email), // getUser
             this.auth, //authentication firebase service
             "disabled", //Prop to update
             newData.disabled //new prop value
         )
+
         // update value in firestore
         .then(async () => {
             return await this.updateUserInfo(id, {"userStatus": !newData.disabled});
@@ -173,10 +177,14 @@ class Users {
         .catch((err) => {
             console.log('Error updating user', err);
         });
+        return {
+            Warning: 'user status has been updated',
+            userStatus: !newData.disabled
+        };
     }
 
     async changeEmail(id, newData) {
-        return await updateAuthenticationValue(
+        await updateAuthenticationValue(
             this.auth.getUserByEmail(newData.currentEmail), // getUser
             this.auth, //authentication firebase service
             "email", //Prop to update
@@ -189,17 +197,25 @@ class Users {
         .catch((err) => {
             console.log('Error updating user', err);
         });
+        return {
+            status: 'New email updated',
+            email: newData.newEmail
+        };
     }
 
     async updateUserInfo(id, newData) {
         const docId = id;
         
         //Define which doc and update it
-        return await this.collection
+        await this.collection
         .doc(docId)
         .update(newData);
 
         //console.log(newData);
+        return {
+            status: 'New data updated',
+            newData
+        };
     }
 }
 

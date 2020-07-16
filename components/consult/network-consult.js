@@ -3,17 +3,18 @@ const { consults } = require('../../store/firestoreAdmin');
 
 const router = express.Router();
 
-router.post('/', create);
+router.post('/:id', create);
 
 async function create(req, res, next) {
     const consultData = req.body;
+    const id = req.params.id;
 
     try {
-        const consult = await consults.createConsult(consultData);
-
+        const consult = await consults.createConsult(consultData, id);
+        
         return res.status(201).json({
             data: consult, 
-            message: 'Exam assigned correctly'
+            message: 'Consult created correctly'
         });
     } catch (error) {
         res.status(400).json({
