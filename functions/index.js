@@ -4,6 +4,6 @@ const userController = require('./components/users/UserController.js')
 
 admin.initializeApp()
 
-exports.createUser = functions.auth
+exports.welcomeEmail = functions.auth
   .user()
   .onCreate(userController.userCreationController)
