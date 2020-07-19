@@ -7,19 +7,21 @@ router.post('/:id', create);
 
 async function create(req, res, next) {
     const examData = req.body;
-    const id = req.params.id;
+    const userId = req.params.id;
 
     try {
-        const exam = await exams.createExam(examData, id);
+        const exam = await exams.createExam(examData, userId);
         
         return res.status(201).json({
             data: exam, 
             message: 'Exam created correctly'
         });
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(400).json({
             data: false, 
-            message: 'An error ocurred during exam creation'
+            message: 'An error ocurred during exam creation',
+            userId: userId
         });
         return next(error);
     }
