@@ -45,9 +45,11 @@ class Exam {
         let exam = {
             examId: examId,
             date: examDate,
+            type: data.type,
             aditionalData: data.aditionalData || null,
             indications: data.indications,
-            type: data.type
+            pdfURL: null,
+            status: false,
         };
          
         //query
