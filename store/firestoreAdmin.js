@@ -16,9 +16,10 @@ require("firebase/storage");
 firebase.initializeApp(firebaseConfig);
 
 //controllers
-const User = require('../components/user/controller-user');
 const Login = require('../components/login/controller-login');
+const User = require('../components/user/controller-user');
 const Massive = require('../components/user-massive/controller-user-massive');
+const Consult = require('../components/consult/controller-consult');
 const Exam = require('../components/exam/controller-exam');
 const Result = require('../components/result/controller-result');
 
@@ -33,6 +34,7 @@ module.exports = {
   login: new Login(db),
   users: new User(auth, db),
   massive: new Massive(db, admin),
+  consults: new Consult(db),
   exams: new Exam(db),
   results: new Result(db, storageBucket)
 };
