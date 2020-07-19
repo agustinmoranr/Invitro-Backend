@@ -7,21 +7,23 @@ router.post('/:id', create);
 
 async function create(req, res, next) {
     const consultData = req.body;
-    const id = req.params.id;
+    const userId = req.params.id;
 
     try {
-        const consult = await consults.createConsult(consultData, id);
+        const consult = await consults.createConsult(consultData, userId);
         
-        return res.status(201).json({
-            data: consult, 
-            message: 'Consult created correctly'
+        return res.status(200).json({
+            data: consult,
+            message: "Consult created correctly"
         });
-    } catch (error) {
+    }
+    catch(err) {
         res.status(400).json({
-            data: false, 
-            message: 'An error ocurred during consult creation'
+            data: false,
+            message: "Error on consult creation.",
+            userId: userId 
         });
-        return next(error);
+        return next(err);
     }
 }
 

@@ -2,10 +2,11 @@ const express = require('express');
 const app = express();
 
 //calls to networks
-const user = require('./components/user/network-user');
 const login = require('./components/login/network-login');
+const user = require('./components/user/network-user');
 const massive = require('./components/user-massive/network-user-massive');
 const consult = require('./components/consult/network-consult');
+const exam = require('./components/exam/network-exam');
 const result = require('./components/result/network-result');
 
 const { firebaseAdminConf } = require('./config/index');
@@ -19,10 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
 //routes
-app.use('/user', user);
-app.use('/consult', consult);
 app.use('/login', login);
+app.use('/user', user);
 app.use('/uploadCSV', massive);
+app.use('/consult', consult);
+app.use('/exam', exam);
 app.use('/result', result);
 
 
