@@ -35,7 +35,7 @@ class Consult {
                     })
                     .catch((err) => {
                         console.error('Error on consult creation', err);
-                        throw new Error(`Bad request. Can not set consult to user: ${userId}`);
+                        throw new Error(`Bad request. Could not set consult to user: ${userId}`);
                     });
                 }
             });
@@ -54,6 +54,27 @@ class Consult {
         return {
             "userId": userId,
             "consultId": consultId
+        };
+    }
+
+    async updateConsult(newData, consultId) {
+        //query
+        await this.collection
+        .doc(newData.identityNumber)
+        .collection('consults')
+        .doc(consultId)
+        .update(newData)
+
+        .then(() => {
+            return console.log('Consult updated sir');
+        })
+        .catch(error => {
+            console.log('Error during updating', error);
+            throw new Error(`Bad request. Could not update consult: ${consultId}`);
+        });
+
+        return {
+            consultId: consultId
         };
     }
 } 
