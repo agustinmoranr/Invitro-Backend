@@ -1,34 +1,34 @@
 const { nanoid } = require('nanoid');
 
-class Consult {
+class Exam {
     constructor(db) {
         this.db = db;
     }
     
-    async createConsult(data, id) {
+    async createExam(data, id) {
         let uid = id;
         let consult = {};
         let examsID = [];
 
         //defining Id Consult Document
-        let date = new Date();
-        let consultId = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        // let date = new Date();
+        // let consultId = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
         
         //Queries/handlers to set data
-        const setConsultData = async (uid, consultId, consult) => {
-            return await this.db.collection('clinicHistory')
-            .doc(uid)
-            .collection('consults')
-            .doc(consultId)
-            .set(consult)
+        // const setConsultData = async (uid, consultId, consult) => {
+        //     return await this.db.collection('clinicHistory')
+        //     .doc(uid)
+        //     .collection('consults')
+        //     .doc(consultId)
+        //     .set(consult)
 
-            .then(() => {
-                return console.log('New consult record created');
-            })
-            .catch((err) => {
-                console.error('Error on consult creation', err);
-            });
-        };
+        //     .then(() => {
+        //         return console.log('New consult record created');
+        //     })
+        //     .catch((err) => {
+        //         console.error('Error on consult creation', err);
+        //     });
+        // };
 
         const setExamData = async (uid, consultId, exam) => {
             return await this.db.collection('exam')
@@ -52,20 +52,20 @@ class Consult {
         }
 
         // If no exams, just set the consult
-        if(!data.exams[0] === true) {
+        // if(!data.exams[0] === true) {
 
-            consult = {
-                consultId: consultId,
-                date: new Date().toDateString(),
-                aditionalData: data.aditionalData || null,
-                indications: data.indications,
-                exams: "No exams assigned to this consult."
-            };
+        //     consult = {
+        //         consultId: consultId,
+        //         date: new Date().toDateString(),
+        //         aditionalData: data.aditionalData || null,
+        //         indications: data.indications,
+        //         exams: "No exams assigned to this consult."
+        //     };
 
-            return await setConsultData(uid, consultId, consult);
-        }
+        //     return await setConsultData(uid, consultId, consult);
+        // }
         // If there are exams. Also set exams
-        else {
+        //else {
             let typeExam = data.exams.map((type) => {
                 return type;
             });
@@ -98,7 +98,7 @@ class Consult {
             };
             
             await setConsultData(uid, consultId, consult);
-        }
+        //}
         return {
             userId: uid,
             consultId: consultId,
@@ -107,4 +107,4 @@ class Consult {
     }
 }
 
-module.exports = Consult;
+module.exports = Exam;
