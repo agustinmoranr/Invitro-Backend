@@ -24,12 +24,12 @@ class Massive {
         .then((userRecord) => {
           // See the UserRecord reference doc for the contents of userRecord.
           return console.log(
-            "Successfully created new user:",
+            "New user successfully created:",
             userRecord.email,
-            jsonUsers
+            jsonUsers[i]
             );
         })
-
+       
         // Create users data en firestore
         .then(async () => {
           return await this.collection
@@ -50,22 +50,16 @@ class Massive {
         .then(async () => {
           return await this.db.collection('clinicHistory')
           .doc(jsonUsers[i]["identityNumber"])
-          .set({clinicHistoryId: jsonUsers[i]["identityNumber"]});
-        })
-        .catch((err) =>{
-          return console.error(err);
+          .set({identityNumber: jsonUsers[i]["identityNumber"]});
         })
 
         //set exams assigment document
         .then(async () => {
           return await this.db.collection('exam')
           .doc(jsonUsers[i]["identityNumber"])
-          .set({examAssignmentId: jsonUsers[i]["identityNumber"]});
+          .set({identityNumber: jsonUsers[i]["identityNumber"]});
         })
-        .catch((err) =>{
-          return console.error(err);
-        })
-        
+
         //queryAnswers
         .then(() => {
           console.log("succesfully inserted");
@@ -76,8 +70,8 @@ class Massive {
           };
         })
         .catch((error) => {
-          console.log(error);
-          return { "User email": jsonUsers[i]["email"], Result: error.code };
+          console.error(error.message);
+          throw new Error(`user email: ${jsonUsers[i]["email"]} Result: ${error.code}`);
         });
 
         messages.push(message);
