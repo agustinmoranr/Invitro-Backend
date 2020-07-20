@@ -31,6 +31,11 @@ const csvfilename = `Users-${Date.now()}.csv`;
 
     upload(req, res, (err) => {
       if(err) {
+        res.status(400).json({
+          data: err.message,
+          message: 'Error: Bad Request',
+          result: false
+        });
         return next(err);
       } else {
 
@@ -41,7 +46,7 @@ const csvfilename = `Users-${Date.now()}.csv`;
         //Build users
         .then(async (json) => {
           users = await massive.insertUsers(json);
-
+          
           // delete csv file stored previously on tempFiles
           fs.unlink(`tempFiles/${csvfilename}`, (err) => {
             if(err) throw err;
@@ -54,8 +59,22 @@ const csvfilename = `Users-${Date.now()}.csv`;
           });
         })
         .catch((err) => {
-          return console.log(err.message);
+          res.status(500).json({
+            data: err.message,
+            status: res.statusCode,
+            message: 'An error ocurred during using creation',
+            result: false
+          });
+
+          //delete csv file stored previously on tempFiles
+          fs.unlink(`tempFiles/${csvfilename}`, (err) => {
+            if(err) throw err;
+            console.log(`./tempFiles/${csvfilename} was deleted`);
+          });
+
+          return next(err);
         }); 
+
         return users;
       }
     });
