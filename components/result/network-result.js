@@ -11,9 +11,9 @@ const PDF = multer({
     limits: {
     fileSize: 5 * 1024 * 1024, // limiting files size to 5 MB
     },
-}).single("sangre" || "glucosa");
+}).single("results");
 
-router.post('/', PDF, uploadPDF);
+router.post('/:id', PDF, uploadPDF);
 
 async function uploadPDF(req, res, next) {
 
@@ -26,11 +26,12 @@ async function uploadPDF(req, res, next) {
     });
 
     let file = req.file;
-    let userId = req.body.userId;
+    let userId = req.params.id;
     let examId = req.body.examId;
 
     try {
         const upload = await results.uploadStorage(file, userId, examId);
+
         return res.status(201).json({
             data: upload,
             message: "File upload correctly to store"
@@ -38,7 +39,7 @@ async function uploadPDF(req, res, next) {
     } catch (error) {
         res.status(500).json({
             data: false,
-            message: "An error ocurred. Please try your query again"
+            message: "An error ocurred. Please try sending your file again"
         });
         return next(error);
     }

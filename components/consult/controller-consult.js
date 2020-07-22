@@ -3,99 +3,80 @@ const { nanoid } = require('nanoid');
 class Consult {
     constructor(db) {
         this.db = db;
+        this.collection = this.db.collection('clinicHistory');
     }
-    
-    async createConsult(data) {
-        let uid = data.identityCard;
-        let consult = {};
 
-        //defining Id Consult Document
+    async createConsult(consultData, userId) {
+        // set documentId
+        let consultId = nanoid();
+
+        // set creation date
         let date = new Date();
-        let consultId = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        let consultDate = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}`;
+
+        //Handler to set data on firestore
+        const setConsultData = async (userId, consultId, consult) => {
+            await this.collection.doc(userId).get()
+            .then(async (snapshot) => {
+                // validate if userId is an existent user.
+                if(snapshot.data().identityNumber !== userId) {
+                    throw new Error(`Bad request. Can not find user: ${userId}`);
+                }
+                // set doc to user
+                else {
+                    return await this.collection
+                    .doc(userId)
+                    .collection('consults')
+                    .doc(consultId)
+                    .set(consult)
         
-        //Queries/handlers to set data
-        const setConsultData = async (uid, consultId, consult) => {
-            return await this.db.collection('clinicHistory')
-            .doc(uid)
-            .collection('consults')
-            .doc(consultId)
-            .set(consult)
-
-            .then(() => {
-                return console.log('New consult record created');
-            })
-            .catch((err) => {
-                console.error('Error on consult creation',err);
+                    .then(() => {
+                        return console.log('New consult record created');
+                    })
+                    .catch((err) => {
+                        console.error('Error on consult creation', err);
+                        throw new Error(`Bad request. Could not set consult to user: ${userId}`);
+                    });
+                }
             });
         };
 
-        const setExamData = async (uid, consultId, exam) => {
-            return await this.db.collection('exam')
-            .doc(uid)
-            .collection('examsAssigned')
-            .doc(consultId)
-            .set(exam)
-
-            .then(() => {
-                return console.log('Exams assigned correctly');
-            })
-            .catch((err) => {
-                return console.error('Error assignig exams',err);
-            });
+        //Estructuring consult data
+        let consult = {
+            consultId: consultId,
+            date: consultDate,
+            details: consultData.details
         };
 
-        // validate data
-        if(!Array.isArray(data.exams)){
-            console.log('Bad request. "exams" is not an array');
-            throw new Error();
-        }
+        //query
+        await setConsultData(userId, consultId, consult);
 
-        // If no exams, just set the consult
-        if(!data.exams[0] === true) {
-
-            consult = {
-                consultId: consultId,
-                date: new Date().toDateString(),
-                aditionalData: data.aditionalData || null,
-                indications: data.indications,
-                exams: "No exams assigned to this consult."
-            };
-
-            return await setConsultData(uid, consultId, consult);
-        }
-        // If also exams. Also set exams
-        else {
-            consult = {
-                consultId: consultId,
-                date: new Date().toDateString(),
-                aditionalData: data.aditionalData || null,
-                indications: data.indications
-            };
-            
-            await setConsultData(uid, consultId, consult);
-    
-            let typeExam = data.exams.map((type) => {
-                return type;
-            });
-    
-            typeExam.forEach(async (exam) => {
-                let type = exam.type;
-                let id = nanoid();
-                
-                let Exam = {
-                    consultId: consultId,
-                    examId: id,
-                    typeExam: type,
-                    status: false,
-                    pdfURL: null,
-                };
-                
-                //set each exam
-                await setExamData(uid, id, Exam);
-            });
-        }
-        return true;
+        return {
+            "userId": userId,
+            "consultId": consultId
+        };
     }
-}
+
+    async updateConsult(newData, consultId) {
+        //query
+        await this.collection
+        .doc(newData.identityNumber)
+        .collection('consults')
+        .doc(consultId)
+        .update(newData)
+
+        .then(() => {
+            return console.log('Consult updated sir');
+        })
+        .catch(error => {
+            console.log('Error during updating', error);
+            throw new Error(`Bad request. Could not update consult: ${consultId}`);
+        });
+
+        return {
+            consultId: consultId
+        };
+    }
+} 
 
 module.exports = Consult;
