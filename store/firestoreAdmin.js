@@ -12,6 +12,7 @@ admin.initializeApp({
 const firebase = require("firebase/app");
 require("firebase/firestore");
 require("firebase/storage");
+require("firebase/auth");
 
 firebase.initializeApp(firebaseConfig);
 
@@ -25,13 +26,13 @@ const Result = require('../components/result/controller-result');
 
 //services 
 const db = admin.firestore();
-const auth = admin.auth();
+const auth = firebase.auth();
 
 //Bucket on firebase storage
 const storageBucket = admin.storage().bucket(firebaseConfig.storageBucket);
 
 module.exports = {
-  login: new Login(db),
+  login: new Login(db, auth),
   users: new User(auth, db),
   massive: new Massive(db, admin),
   consults: new Consult(db),
