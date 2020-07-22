@@ -7,6 +7,8 @@ class Login {
   
   async returnRol(email) {
     let rol = [];
+    
+    //find user rol by email
     await this.collection.where("email", "==", email).get()
       .then(snapshot => {
         if (snapshot.empty) {
@@ -20,26 +22,43 @@ class Login {
       .catch((err) => {
           console.log('Error getting documents', err);
       });
-      console.log(rol);
-    return rol;
+      console.log(rol[0], email);
+    return rol[0];
   }
 
-  async singIn(email, password) {
-    const singIn = this.auth
+  async signIn(email, password) {
+    // auth User
+    return this.auth
       .signInWithEmailAndPassword(email, password)
-      .then(function (userRecord) {
+      .then(async (userRecord) => {
+        console.log('User has logged in successfully');
+
+        //find user rol
+        let rol = await this.returnRol(email);
+
         return {
-          code: 200,
-          message: userRecord.user.email,
+          email: userRecord.user.email,
+          message: 'User has logged in successfully',
+          rol: rol
         };
       })
-      .catch(function (error) {
-        return {
-          code: 404,
-          message: error.message,
-        };
+      .catch((error) => {
+        console.log(error.message);
+        throw new Error(`Error: ${error.message} userEmail: ${email}`);
       });
-    return singIn;
+    //return singIn;
+  }
+
+  async signOut() {
+    await this.auth.signOut()
+    .then(() => {
+      console.log('user has signed out');
+      return 'user has signed out';
+    })
+    .catch((error) => {
+      console.log(error);
+      throw new Error(`Error: ${error.message} userEmail: ${user.email}`);
+    });
   }
 }
 

@@ -1,37 +1,40 @@
 const express = require('express');
 const { login } = require('../../store/firestoreAdmin');
-const { auth } = require('firebase-admin');
 
 const router = express.Router();
 
-router.post("/", singIn);
+router.post("/", signIn);
 
 
-async function singIn (req, res, next) {
-    let rol;
+async function signIn (req, res, next) {
+    let user;
     const authUser = {
         email: req.body.email,
         password: req.body.password
     };
+
     try{  
-        const user = await login.singIn( authUser.email, authUser.password);
-        console.log(user);
-        if (user !== "undefined"){
-            console.log(authUser.email);
-            rol = await login.returnRol(authUser.email);
-            console.log(rol);
-            return res.status(200).json({
-                code:200,
-                message: "Authentication it's ok",
-                rol: rol
-            });
-        } else if (user.code === 404){
-            return res.status(404).json({
-                code:404,
-                message: user.message
+        if (authUser.email && authUser.password){
+            user = await login.signIn(authUser.email, authUser.password);
+                return res.status(201).json({
+                    result: user,
+                    code: res.statusCode,
+                    message: "Authentication it's ok",
+                });
+        }
+        // if you just send a post petition with NO body and params. 
+        else {
+            user = await login.signOut();
+            return res.status(201).json({
+                code: res.statusCode,
+                message: "User has signed out",
             });
         }
-    }catch(error){
+    } catch(error){
+        res.status(500).json({
+            status: res.statusCode,
+            error: error.message
+        });
        return next(error);
     }
 }
