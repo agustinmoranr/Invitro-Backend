@@ -84,7 +84,7 @@ class Users {
     async createUser(body) {
         let newUser;
         let user = [];
-
+        
         // get email and pass
         const email = body.email;
         const password = body.password;
@@ -100,14 +100,14 @@ class Users {
             rol: body.rol,
             userStatus: true,
         };
-
+        console.log(email);
         //User exists?
         await this.auth.getUserByEmail(email)
         .then((userRecord) => {
             return user.push(userRecord.email);
         })
         .catch((error) => {
-            return console.log("creating user...");
+            console.log("creating user...");
         });
 
         if(user[0] !== undefined) {
