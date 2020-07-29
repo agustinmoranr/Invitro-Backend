@@ -1,0 +1,37 @@
+{
+  "name": "Invitro-Backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agustinmoranr/Invitro-Backend/issues"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "firebase": "^7.15.0",
+    "firebase-admin": "^8.12.1",
+    "multer": "^1.4.2",
+    "nanoid": "^3.1.10"
+  },
+  "devDependencies": {
+    "eslint": "^7.1.0",
+    "eslint-plugin-promise": "^4.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agustinmoranr/Invitro-Backend.git"
+  },
+  "homepage": "https://github.com/agustinmoranr/Invitro-Backend#readme"
+}
