@@ -1,6 +1,6 @@
 # Invitro-Backend
 
-![](https://camo.githubusercontent.com/e23f24c24cc3e5dee22842a71c99b232a0c99427/687474703a2f2f7265736f757263652e696e74696465762e696e666f2f496e566974726f2f496e766974726f5f6c6f676f2e706e67)
+![](https://i.imgur.com/dAgqj8q.jpg)
 
 ##### Sistema gestor de exámenes clínicos.
 
