@@ -1,10 +1,9 @@
-# Invitro-Backend
+
+# Sistema gestor de exámenes clínicos.
 
 ![](https://i.imgur.com/dAgqj8q.jpg)
 
-##### Sistema gestor de exámenes clínicos.
-
-## Repositories related with Invitro-backend project.
+### Repositories related with Invitro-backend project.
 
 - https://github.com/MauricioFa/InVitro-massive-user-creation
 
@@ -12,7 +11,7 @@
 
 - https://github.com/IntiDev/InVitro
 
-## Documentación.
+## Documentation.
 
 #### Please checkout our [in vitro wiki](https://github.com/IntiDev/InVitro/wiki) Here you can access to the complete documentation for API using.
 
