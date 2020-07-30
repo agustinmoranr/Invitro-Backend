@@ -1,23 +1,158 @@
-# Invitro-Backend
 
-![](https://camo.githubusercontent.com/e23f24c24cc3e5dee22842a71c99b232a0c99427/687474703a2f2f7265736f757263652e696e74696465762e696e666f2f496e566974726f2f496e766974726f5f6c6f676f2e706e67)
+# Sistema gestor de exámenes clínicos.
 
-##### Sistema gestor de exámenes clínicos.
+![](https://i.imgur.com/dAgqj8q.jpg)
 
-## Repositorios relacionados al proyecto Backend
-
-- https://github.com/MauricioFa/InVitro-cloud-functions
+### Repositories related with Invitro-backend project.
 
 - https://github.com/MauricioFa/InVitro-massive-user-creation
 
-### Frontend
+### Frontend Repository
 
 - https://github.com/IntiDev/InVitro
 
-## Desarrollo 
+## Documentation.
 
-##### El Proyecto Actualmente se encuentra en desarrollo. Por lo cual se debera descargar el repositorio desde la rama dev donde se puede consultar la versión 1.0.0.
+#### Please checkout our [in vitro wiki](https://github.com/IntiDev/InVitro/wiki) Here you can access to the complete documentation for API using.
 
-## Documentación.
+### API Rutes
+- Login
+    - API: https://invitro-api.herokuapp.com/login
+    - Methods 
+        - /Login POST 
+- users CRUD
+    - https://invitro-api.herokuapp.com/user
+    - Methods
+        - /user GET
+        - /user/userId GET
+        - /user POST
+        - /user/userId PUT
+- Create Multiple Users Through csv File.
+    - API: https://invitro-api.herokuapp.com/uploadcsv
+    - Methods: 
+        - /uploadCSV POST
+- Consults Creation
+    - API: https://invitro-api.herokuapp.com/consult
+    - Methods
+        - /consult/userId POST 
+        - /consult/userId PUT
+- Exams Assigment
+    - API: https://invitro-api.herokuapp.com/exam
+    - Methods
+        - /exam/userId POST
+- Upload results file.
+    - API: https://invitro-api.herokuapp.com/result
+    - Methods 
+         - /result/userId POST
 
-##### La documentación de este proyecto la puedes encontrar en nuestra [wiki](https://github.com/IntiDev/InVitro/wiki)
+## Development 
+
+API REST builded with:
+- Node.JS + Express.JS
+- Firebase Ecosystem 
+    - Firebase Authetication
+    - Firestore
+    - Firebase Storage
+    - Firebase cloud Functions
+- Deployed in Heroku.
+
+### Collections
+- Users
+    - Define all personal data from user.
+- ClinicHistory
+    - Define all the consults that user is going to be taking through time as sub-documents.
+- Exams
+    - Define all the exams assigned to a pacient.
+
+**Each user has a personal document into each collection.**
+
+**Each document ID is defined by user identity-Number**
+
+**indentity-Number is an unique combination of numbers/letters (or both) defined on user document-type**
+
+### Sub-collections.
+- Consults
+    - contains all the pacient consults as documents.
+- ExamsAssigned
+    - contains all the pacient exams as documents.
+
+### collections Data
+
+**User**
+
+```json
+const users = [
+    {
+        "userId": "MOORO25631EREW25",
+        "UserData": {
+            "lastName": "User",
+            "name": "New",
+            "numberContact": 555555,
+            "email": "newuser@gmail.com",
+            "rol": "Admin",
+            "identityNumber": "MOORO25631EREW25",
+            "userStatus": true,
+            "documentType": "INE"
+        }
+    }
+]
+```
+
+**ClinicHistory**
+
+```json
+const clinicHistory = [
+    {
+        "userId": "MOORO25631EREW25",
+        "consults": [
+            {
+                "consultId": "15-7-2020-23:45:9",
+                "consult": {
+                    "consultId": "15-7-2020-23:45:9",
+                    "date": "15-07-2020",
+                    "details":"Pacient presents strong headache"
+                }
+            }
+        ] 
+    }
+]
+```
+
+**Exams** 
+
+```json
+const exam = [
+    {
+        "userId": "MOORO25631EREW25",
+        "examsAssigned": [
+            {
+                "examId": "3QUf7iM5zwyhrX1ajsGIe",
+                "exam": {
+                    "consultId": "15-7-2020-23:45:9",
+                    "examId": "3QUf7iM5zwyhrX1ajsGIe",
+                    "typeExam": "Sangre",
+                    "indications": "Take exam with at least 5 hours fasting",
+                    "aditionalData": "Continue taking current treatment",
+                    "pdfURL": "https://firebasestorage.googleapis.com/v0/b/in-vitro-470ae.appspot.com/o/C66ZE-3Og4iRBAQbQIh60.pdf?alt=media",
+                    "status": true
+                }
+            }
+        ]
+    }
+]
+```
+
+**DB structure in Firestore.**
+
+~~~
+Firestore 
+        |Collection|        |Document|        |Sub-Collection|     |Sub-Document|
+        +
+        + Users ------------UserDocument
+        +                               
+        +
+        + ClinicHistory-----UserDocument---------Consults----------consultDocument   
+        +                                                                       
+        +                                                                                  
+        + Exams-------------UserDocument-------ExamsAssigned--------examDocument
+~~~
