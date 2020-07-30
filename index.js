@@ -1,7 +1,10 @@
+// Modules
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
 
-//calls to networks
+//networks (routes handlers)
 const login = require('./components/login/network-login');
 const user = require('./components/user/network-user');
 const massive = require('./components/user-massive/network-user-massive');
@@ -9,8 +12,8 @@ const consult = require('./components/consult/network-consult');
 const exam = require('./components/exam/network-exam');
 const result = require('./components/result/network-result');
 
+//Enviroment variable
 const { firebaseAdminConf } = require('./config/index');
-const cors = require('cors');
 
 const port = firebaseAdminConf.port || 8000;
 

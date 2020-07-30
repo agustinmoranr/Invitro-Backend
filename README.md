@@ -59,15 +59,23 @@ API REST builded with:
 
 ### Collections
 - Users
-    - Define all personal data from user (Each user has a document using its identityNumber as the document ID)
+    - Define all personal data from user.
 - ClinicHistory
-    - Define all the consults that user is going to be taking through time.
+    - Define all the consults that user is going to be taking through time as sub-documents.
 - Exams
-    - If an exam is assigned to a pacient. That exam is going to be a document.
+    - Define all the exams assigned to a pacient.
+
+**Each user has a personal document into each collection.**
+
+**Each document ID is defined by user identity-Number**
+
+**indentity-Number is an unique combination of numbers/letters (or both) defined on user document-type**
 
 ### Sub-collections.
 - Consults
+    - contains all the pacient consults as documents.
 - ExamsAssigned
+    - contains all the pacient exams as documents.
 
 ### collections Data
 
@@ -134,7 +142,6 @@ const exam = [
     }
 ]
 ```
-
 
 **DB structure in Firestore.**
 

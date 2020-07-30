@@ -8,7 +8,7 @@ admin.initializeApp({
   databaseURL: `"https://${firebaseAdmin.project_id}.firebaseio.com"`,
 });
 
-//config for storage
+//config for Firebase Services
 const firebase = require("firebase/app");
 require("firebase/firestore");
 require("firebase/storage");
@@ -16,7 +16,7 @@ require("firebase/auth");
 
 firebase.initializeApp(firebaseConfig);
 
-//controllers
+//controllers (Business logic from each component)
 const Login = require('../components/login/controller-login');
 const User = require('../components/user/controller-user');
 const Massive = require('../components/user-massive/controller-user-massive');
@@ -32,6 +32,7 @@ const adminAuth = admin.auth();
 //Bucket on firebase storage
 const storageBucket = admin.storage().bucket(firebaseConfig.storageBucket);
 
+//instances of each controller injecting firebase modules
 module.exports = {
   login: new Login(db, auth),
   users: new User(adminAuth, db),

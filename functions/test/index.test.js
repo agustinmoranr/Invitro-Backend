@@ -1,6 +1,6 @@
 
 const test = require("firebase-functions-test")(
-  {//ATTENTON: Fill all missing values before testing
+  {//ATTENTION: Fill all missing values before testing
     databaseURL: "",
     projectId: "",
     storageBucket: "",
@@ -8,7 +8,7 @@ const test = require("firebase-functions-test")(
   "./test/credentials.json"
 );
 
-//ATTENTON: Fill all missing values before testing
+//ATTENTION: Fill all missing values before testing
 test.mockConfig({
   "configuration": {
     "email": "",
@@ -26,7 +26,7 @@ describe('functions', ()=>{
     describe('createUserTest', ()=>{
         it('createUser', (done) =>{
             const createUserWrap = test.wrap(functions.createUser)
-            //ATTENTON: Fill all missing values before testing
+            //ATTENTION: Fill all missing values before testing
             const data = {"displayName": "Pepe", "email": ""}
             createUserWrap(data)
             .then(()=>{

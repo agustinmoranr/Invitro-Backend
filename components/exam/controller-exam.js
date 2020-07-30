@@ -5,7 +5,40 @@ class Exam {
         this.db = db;
         this.collection = this.db.collection('exam');
     }
+
+    // helper to verify if user exists
+    async verifyUserExistence(userId) {
+        //get user doc
+        return await this.collection.doc(userId).get()
+
+        .then((snapshot) => console.log('userId:', snapshot.data().identityNumber))
+        .catch((error) => {
+            console.error(error);
+            throw new Error(`Bad request. User ${userId} could not be found.`);
+        });
+    }
     
+    //Handler to set data on firestore
+    async setExamData(userId, examId, exam){
+        await this.verifyUserExistence(userId)
+        .then(() => console.log('User verfied'));
+
+        // set doc to user
+        return await this.collection
+        .doc(userId)
+        .collection('examsAssigned')
+        .doc(examId)
+        .set(exam)
+
+        .then(() => {
+            return console.log('Exams assigned correctly');
+        })
+        .catch((err) => {
+            console.error(err);
+            throw new Error(`Bad request. Exam could not be assigned to user: ${userId}`);
+        });
+    }
+
     async createExam(data, userId) {
         // set documentId
         const examId = nanoid();
@@ -13,33 +46,6 @@ class Exam {
         // set creation date
         let date = new Date();
         let examDate = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}`;
-
-        //Handler to set data on firestore
-        const setExamData = async (userId, examId, exam) => {
-            await this.collection.doc(userId).get()
-            .then(async (snapshot) => {
-                // validate if userId is an existent user.
-                if(snapshot.data().identityNumber !== userId) {
-                    throw new Error(`Bad request. Can not find user: ${userId}`);
-                }
-                // set doc to user
-                else {
-                    return await this.collection
-                    .doc(userId)
-                    .collection('examsAssigned')
-                    .doc(examId)
-                    .set(exam)
-        
-                    .then(() => {
-                        return console.log('Exams assigned correctly');
-                    })
-                    .catch((err) => {
-                        console.error('Error assignig exams',err);
-                        throw new Error(`Bad request. Could not set exam to user: ${userId}`);
-                    });
-                }
-            });
-        };
 
         // Estructuring exam data
         let exam = {
@@ -52,13 +58,14 @@ class Exam {
             status: false,
         };
          
-        //query
-        await setExamData(userId, examId, exam);
-
-        return {
-            userId: userId,
-            examId: examId,
-        };
+        //call set exam handler
+        return await this.setExamData(userId, examId, exam)
+        .then(() => {
+            return {
+                userId: userId,
+                examId: examId,
+            };
+        });
     }
 }
 

@@ -1,7 +1,9 @@
 const express = require('express');
 const multer = require('multer');
-const { results } = require('../../store/firestoreAdmin');
 const { nanoid } = require('nanoid');
+
+//instance of users contoller
+const { results } = require('../../store/firestoreAdmin');
 
 const router = express.Router();
 
@@ -13,6 +15,7 @@ const PDF = multer({
     },
 }).single("results");
 
+//HTTP Methods
 router.post('/:id', PDF, uploadPDF);
 
 async function uploadPDF(req, res, next) {
@@ -33,13 +36,17 @@ async function uploadPDF(req, res, next) {
         const upload = await results.uploadStorage(file, userId, examId);
 
         return res.status(201).json({
-            data: upload,
-            message: "File upload correctly to store"
+            result: upload,
+            message: "File upload correctly to store",
+            statusCode: res.statusCode
         });
     } catch (error) {
-        res.status(500).json({
-            data: false,
-            message: "An error ocurred. Please try sending your file again"
+        res.status(400).json({
+            Error: error.message,
+            message: "An error ocurred. Please try sending your file again",
+            userId: userId,
+            examId: examId,
+            statusCode: res.statusCode
         });
         return next(error);
     }

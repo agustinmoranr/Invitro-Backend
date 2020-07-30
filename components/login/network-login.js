@@ -1,21 +1,21 @@
 const express = require('express');
+
+//instance of login contoller
 const { login } = require('../../store/firestoreAdmin');
 
 const router = express.Router();
 
+//HTTP Methods
 router.post("/", signIn);
-
 
 async function signIn (req, res, next) {
     let user;
-    const authUser = {
-        email: req.body.email,
-        password: req.body.password
-    };
+    const email = req.body.email;
+    const password = req.body.password;
 
     try{  
-        if (authUser.email && authUser.password){
-            user = await login.signIn(authUser.email, authUser.password);
+        if (email && password){
+            user = await login.signIn(email, password);
                 return res.status(201).json({
                     result: user,
                     code: res.statusCode,
@@ -32,8 +32,9 @@ async function signIn (req, res, next) {
         }
     } catch(error){
         res.status(500).json({
+            user: email,
+            error: error.message,
             status: res.statusCode,
-            error: error.message
         });
        return next(error);
     }

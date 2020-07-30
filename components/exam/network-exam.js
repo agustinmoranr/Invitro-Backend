@@ -1,8 +1,11 @@
 const express = require('express');
+
+//instance of exams contoller
 const { exams } = require('../../store/firestoreAdmin');
 
 const router = express.Router();
 
+//HTTP Methods
 router.post('/:id', create);
 
 async function create(req, res, next) {
@@ -13,15 +16,17 @@ async function create(req, res, next) {
         const exam = await exams.createExam(examData, userId);
         
         return res.status(201).json({
-            data: exam, 
-            message: 'Exam created correctly'
+            result: exam, 
+            message: 'Exam created correctly',
+            statusCode: res.statusCode
         });
     } 
     catch (error) {
         res.status(400).json({
-            data: false, 
+            Error: error.message, 
             message: 'An error ocurred during exam creation',
-            userId: userId
+            userId: userId,
+            statusCode: res.statusCode
         });
         return next(error);
     }

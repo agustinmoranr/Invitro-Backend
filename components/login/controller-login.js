@@ -43,8 +43,8 @@ class Login {
         };
       })
       .catch((error) => {
-        console.log(error.message);
-        throw new Error(`Error: ${error.message} userEmail: ${email}`);
+        console.log(error);
+        throw new Error(`Error: ${error.message}`);
       });
     //return singIn;
   }
@@ -57,7 +57,7 @@ class Login {
     })
     .catch((error) => {
       console.log(error);
-      throw new Error(`Error: ${error.message} userEmail: ${user.email}`);
+      throw new Error(`Error: ${error.message}`);
     });
   }
 }

@@ -6,6 +6,39 @@ class Consult {
         this.collection = this.db.collection('clinicHistory');
     }
 
+    // helper to verify if user exists
+    async verifyUserExistence(userId) {
+        //get user doc
+        return await this.collection.doc(userId).get()
+
+        .then((snapshot) => console.log('userId:', snapshot.data().identityNumber))
+        .catch((error) => {
+            console.error(error);
+            throw new Error(`Bad request. User ${userId} could not be found.`);
+        });
+    }
+
+    //Handler to set consult on firestore
+    async setConsultData (userId, consultId, consult) {
+        await this.verifyUserExistence(userId)
+        .then(() => console.log('User verfied'));
+
+        // set doc to user
+        return await this.collection
+        .doc(userId)
+        .collection('consults')
+        .doc(consultId)
+        .set(consult)
+
+        .then(() => {
+            return console.log('New consult record created');
+        })
+        .catch((err) => {
+            console.error(err);
+            throw new Error(`Bad request. Could not set consult to user: ${userId}`);
+        });
+    }
+
     async createConsult(consultData, userId) {
         // set documentId
         let consultId = nanoid();
@@ -14,33 +47,6 @@ class Consult {
         let date = new Date();
         let consultDate = `${date.getDate()}-${(date.getMonth() + 1)}-${date.getFullYear()}`;
 
-        //Handler to set data on firestore
-        const setConsultData = async (userId, consultId, consult) => {
-            await this.collection.doc(userId).get()
-            .then(async (snapshot) => {
-                // validate if userId is an existent user.
-                if(snapshot.data().identityNumber !== userId) {
-                    throw new Error(`Bad request. Can not find user: ${userId}`);
-                }
-                // set doc to user
-                else {
-                    return await this.collection
-                    .doc(userId)
-                    .collection('consults')
-                    .doc(consultId)
-                    .set(consult)
-        
-                    .then(() => {
-                        return console.log('New consult record created');
-                    })
-                    .catch((err) => {
-                        console.error('Error on consult creation', err);
-                        throw new Error(`Bad request. Could not set consult to user: ${userId}`);
-                    });
-                }
-            });
-        };
-
         //Estructuring consult data
         let consult = {
             consultId: consultId,
@@ -48,34 +54,34 @@ class Consult {
             details: consultData.details
         };
 
-        //query
-        await setConsultData(userId, consultId, consult);
+        //call set consult handler
+        await this.setConsultData(userId, consultId, consult);
 
         return {
-            "userId": userId,
-            "consultId": consultId
+            userId: userId,
+            consultId: consultId
         };
     }
 
     async updateConsult(newData, consultId) {
         //query
-        await this.collection
+        return await this.collection
         .doc(newData.identityNumber)
         .collection('consults')
         .doc(consultId)
-        .update(newData)
-
+        .update({"details": newData.details})
         .then(() => {
-            return console.log('Consult updated sir');
+            console.log('Consult updated sir');
+            return {
+                consultId: consultId,
+                userId: newData.identityNumber
+            };
         })
         .catch(error => {
             console.log('Error during updating', error);
-            throw new Error(`Bad request. Could not update consult: ${consultId}`);
+            throw new Error(`Bad request. Could not update consult: ${consultId} .From user: ${newData.identityNumber}`, 
+            error);
         });
-
-        return {
-            consultId: consultId
-        };
     }
 } 
 

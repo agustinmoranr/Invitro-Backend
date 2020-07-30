@@ -1,8 +1,11 @@
 const express = require('express');
+
+//instance of consults contoller
 const { consults } = require('../../store/firestoreAdmin');
 
 const router = express.Router();
 
+//HTTP Methods
 router.post('/:id', create);
 router.put('/:id', update);
 
@@ -13,38 +16,42 @@ async function create(req, res, next) {
     try {
         const consult = await consults.createConsult(consultData, userId);
         
-        return res.status(200).json({
+        return res.status(201).json({
             data: consult,
-            message: "Consult created correctly"
+            message: "Consult created correctly",
+            statusCode: res.statusCode
         });
     }
     catch(err) {
         res.status(400).json({
-            data: false,
+            Error: err.message,
             message: "Error on consult creation.",
-            userId: userId 
+            userId: userId,
+            statusCode: res.statusCode
         });
         return next(err);
     }
 }
 
 async function update(req, res, next) {
-    consultId = req.params.id;
-    newData = req.body;
+    const consultId = req.params.id;
+    const newData = req.body;
 
     try {
         const updatedConsult = await consults.updateConsult(newData, consultId);
 
         return res.status(201).json({
             data: updatedConsult,
-            message: "Consult successfully updated"
+            message: "Consult successfully updated",
+            statusCode: res.statusCode
         });
     } 
     catch (error) {
         res.status(400).json({
-            data: false,
+            Error: error.message,
             message: "An error ocurred during consult updating",
-            userId: userId
+            userId: newData.identityNumber,
+            statusCode: res.statusCode
         });
         return next(error);
     }

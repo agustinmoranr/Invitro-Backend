@@ -13,15 +13,16 @@ class Users {
         await this.collection.get()
         .then(snapshot => {
             return snapshot.forEach(doc => {
-              console.log(doc.id, '=>', doc.data());
-              return users.push({
+                // Put them into array
+                return users.push({
                     id: doc.id,
                     UserData: doc.data()
                 });
             });
           })
           .catch(err => {
-            console.log('Error getting documents', err);
+            console.error(err);
+            throw new Error('Error getting users documents');
           });
 
         return users;
@@ -61,10 +62,12 @@ class Users {
         await this.collection.doc(id).get()
         .then(doc => {
             if (!doc.exists) {
-            return  console.log('User Not found');
+            console.error('User Not found');
+            throw new Error('Error retrieving user', err.mesage);
+
             } 
             else {
-                //firestore user document
+                //set complete user data 
                 return User.push({ 
                     id: uid,
                     userData: doc.data(), 
@@ -74,10 +77,10 @@ class Users {
             }
         })
         .catch((err) => {
-            console.error('Error getting main user info', err);
+            console.error(err);
+            throw new Error('Error retrieving user');
         });
 
-        //console.log(user);
         return User;
     }
 
@@ -100,8 +103,8 @@ class Users {
             rol: body.rol,
             userStatus: true,
         };
-        console.log(email);
-        //User exists?
+
+        //Verify that user currently no exists
         await this.auth.getUserByEmail(email)
         .then((userRecord) => {
             return user.push(userRecord.email);
@@ -111,12 +114,12 @@ class Users {
         });
 
         if(user[0] !== undefined) {
-            console.log('The user already exists, try using a different email.', user[0]);
+            console.error('The user already exists, try using a different email.', user[0]);
             throw new Error("Error ocurred");
         } 
 
         else {
-        //create user in firebase Authentication and firestore
+        //create user in firebase Authentication
             await this.auth.createUser({
                 email,
                 password,
@@ -124,6 +127,7 @@ class Users {
                 disabled: false,
                 displayName: `${userData.name} ${userData.lastName}`,
             })
+            // Create user document in Firestore
             .then(async () => {
                 newUser = await this.collection
                 .doc(userData.identityNumber)
@@ -132,7 +136,8 @@ class Users {
                 return newUser;
             })
             .catch(err => {
-                throw new Error ('Error on user creation. please, try again', err);
+                console.error(err);
+                throw new Error ('Error on user creation. please, try again');
             })
 
         //set medical history document
@@ -155,10 +160,10 @@ class Users {
                 return console.error(err);
             });
 
-        return {
-            email: email,
-            identityNumber: userData.identityNumber
-        };
+            return {
+                email: email,
+                userId: userData.identityNumber
+            };
         }
     }
 
@@ -175,7 +180,8 @@ class Users {
             return await this.updateUserInfo(id, {"userStatus": !newData.disabled});
         })
         .catch((err) => {
-            console.log('Error updating user', err);
+            console.error(err);
+            throw new Error(`Error updating user status. User: ${newData.email}`);
         });
         return {
             Warning: 'user status has been updated',
@@ -195,7 +201,8 @@ class Users {
             return await this.updateUserInfo(id, {"email": newData.newEmail});
         })
         .catch((err) => {
-            console.log('Error updating user', err);
+            console.error(err);
+            throw new Error('Error changin Email');
         });
         return {
             status: 'New email updated',
@@ -209,13 +216,17 @@ class Users {
         //Define which doc and update it
         await this.collection
         .doc(docId)
-        .update(newData);
-
-        //console.log(newData);
-        return {
-            status: 'New data updated',
-            newData
-        };
+        .update(newData)
+        .then(() => {
+            return {
+                status: 'New data updated',
+                newData
+            };
+        })
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Error updating user info');
+        });
     }
 }
 
